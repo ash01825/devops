@@ -90,7 +90,7 @@ with search, audit history, and a summary dashboard.
 | SC-3 | Every status transition is role-guarded | Selenium permission test passes |
 | SC-4 | 100% of status changes are in the history log | Unit test + UI verification |
 | SC-5 | Dashboard shows correct counts by status/station | Selenium dashboard test passes |
-| SC-6 | CI build succeeds on every commit to `develop` | Jenkins build log SUCCESS |
+| SC-6 | CI build succeeds on every commit to `master` | Jenkins build log SUCCESS |
 | SC-7 | Failed tests block deployment | Pipeline halts before deploy stage |
 | SC-8 | App deploys from a versioned Docker image | End-to-end commit-to-container demo |
 | SC-9 | Ansible rerun reports `changed=0` (idempotent) | Second playbook run output |

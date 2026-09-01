@@ -24,4 +24,4 @@ What actually happens, including any error message or screenshot.
 - OS:
 - Java version:
 - Browser (if UI):
-- Branch/commit:
+- Commit:

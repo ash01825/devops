@@ -59,7 +59,7 @@ The app runs at `http://localhost:8080/water-quality-portal`.
 ├── docker/                    # Dockerfile + docker-compose (Week 11+)
 ├── jenkins/                   # Jenkinsfile + job config (Week 7+)
 ├── ansible/                   # inventory + playbooks (Week 13+)
-├── .github/                   # issue + PR templates
+├── .github/                   # issue templates
 └── .gitignore
 ```
 
@@ -71,6 +71,6 @@ git push → Jenkins CI → Maven build → Selenium quality gate → Docker bui
 
 See `docs/02-agile-devops-workflow.md` for the lifecycle diagram and Definition of Done.
 
-## Branching policy
+## Git workflow
 
-See `docs/04-git-branching-policy.md`.
+See `docs/04-git-branching-policy.md` (single branch, direct commits, tags).

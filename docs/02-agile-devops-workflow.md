@@ -72,7 +72,7 @@ glance.
 
 ### Epic 5 — DevOps Pipeline
 
-**US-5.1** As a developer, I want every commit to `develop` to trigger an automated build
+**US-5.1** As a developer, I want every commit to `master` to trigger an automated build
 and test so that defects are caught early.
 - AC: Jenkins polls the repo and runs `mvn clean verify`.
 - AC: Build artifact is archived.
@@ -123,8 +123,8 @@ tracks the backlog → in-progress → done flow; the sprint plan below maps sto
 | 1 | Problem & scope | — (foundation) |
 | 2 | Agile/DevOps workflow | Backlog, board, DoD, lifecycle diagram |
 | 3 | Architecture & setup | SRS, architecture, data model, local skeleton |
-| 4 | Git/GitHub init | Repo, README, templates, branch rules |
-| 5 | Feature 1 (branch) | US-1.1, US-2.1, US-2.2 (create/view + login) |
+| 4 | Git/GitHub init | Repo, README, templates, git workflow |
+| 5 | Feature 1 | US-1.1, US-2.1, US-2.2 (create/view + login) |
 | 6 | MVP completion | US-2.3, US-2.4, US-3.1, US-3.2, US-3.3, US-4.1 |
 | 7 | CI job | US-5.1 (Jenkins Maven job) |
 | 8 | Pipeline-as-code | US-5.1 (Jenkinsfile + deploy) |
@@ -149,8 +149,8 @@ A user story is **Done** only when ALL of the following are true:
 1. **Code complete** against the story's acceptance criteria.
 2. **Builds clean** with `mvn clean verify` (no compile/unit-test failures).
 3. **Tests pass** — relevant unit tests and (where applicable) Selenium journey tests.
-4. **Reviewed** via pull request (feature branch → `develop`) with at least one review.
-5. **Merged** into `develop` by the repository owner (user runs git).
+4. **Committed** to `master` with a meaningful message (user runs git).
+5. **Pushed** to the remote.
 6. **Documented** — any API/DB change reflected in `docs/`.
 7. **Deployable** — no broken pipeline stage; artifact/container produced.
 8. **Evidence captured** — screenshots/logs saved for the deliverable.
@@ -170,7 +170,7 @@ For **DevOps deliverables** (Jenkins, Docker, Ansible), the DoD additionally req
 └───────────────────────────────┬─────────────────────────────────────┘
                                 │
 ┌─────────────────────────────── CODE ───────────────────────────────┐
-│  Spring Boot + PostgreSQL, feature branches, PR review (Weeks 3–6)  │
+│  Spring Boot + PostgreSQL, single-branch commits (Weeks 3–6)  │
 └───────────────────────────────┬─────────────────────────────────────┘
                                 │ git commit/push (you run)
                                 ▼
