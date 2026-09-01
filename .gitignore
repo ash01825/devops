@@ -1,1 +1,63 @@
+# --- Command Code / agent ---
 .commandcode/
+
+# --- IDE / editor ---
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# --- macOS ---
+.DS_Store
+
+# --- Java / Maven build output ---
+target/
+*.class
+*.war
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+.classpath
+.project
+.settings/
+.mtj.tmp/
+hs_err_pid*
+replay_pid*
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Environment / secrets (never commit) ---
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+credentials.xml
+docker-compose.override.yml
+
+# --- Docker runtime data ---
+jenkins_home/
+postgres_data/
+*.tar
+
+# --- Ansible ---
+*.retry
+ansible/*.retry
+.ansible/
+.vagrant/
+*.box
+
+# --- Selenium / test artifacts ---
+test-output/
+screenshots/failures/
+target/surefire-reports/
+target/failsafe-reports/
+geckodriver.log
+chromedriver.log
+
+# --- Node (if any frontend tooling added later) ---
+node_modules/
