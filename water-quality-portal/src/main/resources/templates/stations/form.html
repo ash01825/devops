@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>New Station</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">💧 Water Quality Portal</div>
+    <nav class="nav"><a th:href="@{/stations}">Stations</a></nav>
+    <div class="userbox"><span sec:authentication="name">user</span></div>
+</header>
+<div class="container">
+    <div class="card">
+        <h2>New station</h2>
+        <form th:action="@{/stations}" th:object="${station}" method="post" id="stationForm">
+            <div class="form-grid">
+                <div class="field"><label for="code">Code *</label>
+                    <input id="code" th:field="*{code}" placeholder="ST-05" required></div>
+                <div class="field"><label for="name">Name *</label>
+                    <input id="name" th:field="*{name}" required></div>
+                <div class="field"><label for="waterBody">Water body</label>
+                    <input id="waterBody" th:field="*{waterBody}"></div>
+                <div class="field"><label for="latitude">Latitude</label>
+                    <input id="latitude" type="number" step="0.0001" th:field="*{latitude}"></div>
+                <div class="field"><label for="longitude">Longitude</label>
+                    <input id="longitude" type="number" step="0.0001" th:field="*{longitude}"></div>
+            </div>
+            <button class="btn" type="submit" id="saveStationBtn">Create station</button>
+            <a class="btn secondary" th:href="@{/stations}">Cancel</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

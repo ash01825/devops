@@ -1,0 +1,84 @@
+# ============================================================
+# Water Quality Sampling Portal — rollback playbook
+# Rolls the app container back to a previous stable image tag.
+# Usage:
+#   ansible-playbook -i ansible/inventory.ini ansible/rollback.yml \
+#     -e "prev_version=1.0.0"
+# Health-gates the rollback: fails if the old version is not healthy.
+# ============================================================
+
+- name: Roll back portal app to previous stable image
+  hosts: portal
+  become: false
+  vars:
+    prev_version: "1.0.0"   # override with -e prev_version=X.Y.Z
+    app_port: 8080
+    app_context: water-quality-portal
+    deploy_dir: /opt/wq-portal
+    compose_project: wq-portal
+
+  tasks:
+    - name: Validate prev_version is set
+      ansible.builtin.assert:
+        that:
+          - prev_version is defined
+          - prev_version | length > 0
+        fail_msg: "Pass the stable tag: -e prev_version=1.0.0"
+
+    - name: Show rollback target
+      ansible.builtin.debug:
+        msg: "Rolling back app to water-quality-portal:{{ prev_version }}"
+      changed_when: false
+
+    - name: Ensure rollback image is present locally
+      community.docker.docker_image:
+        name: "water-quality-portal:{{ prev_version }}"
+        source: pull
+      failed_when: false
+      register: prev_image
+
+    - name: Stop current app container
+      community.docker.docker_container:
+        name: wq-portal-app
+        state: stopped
+      failed_when: false
+
+    - name: Start previous stable app container
+      community.docker.docker_container:
+        name: wq-portal-app
+        image: "water-quality-portal:{{ prev_version }}"
+        state: started
+        restart_policy: unless-stopped
+        ports:
+          - "{{ app_port }}:8080"
+        env:
+          SPRING_PROFILES_ACTIVE: prod
+          SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/waterquality
+          SPRING_DATASOURCE_USERNAME: wquser
+          SPRING_DATASOURCE_PASSWORD: wqpass
+        networks:
+          - name: "{{ compose_project }}_default"
+      register: rollback_container
+
+    - name: Wait for app port to open after rollback
+      ansible.builtin.wait_for:
+        host: "127.0.0.1"
+        port: "{{ app_port }}"
+        delay: 5
+        timeout: 180
+
+    - name: Health-check actuator endpoint after rollback (expect 200)
+      ansible.builtin.uri:
+        url: "http://localhost:{{ app_port }}/{{ app_context }}/actuator/health"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: health
+      retries: 12
+      delay: 10
+      until: health.status == 200
+
+    - name: Report rollback result
+      ansible.builtin.debug:
+        msg: "Rollback to {{ prev_version }} healthy: HTTP {{ health.status }}"
+      changed_when: false

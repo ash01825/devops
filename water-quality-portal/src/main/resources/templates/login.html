@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Water Quality Portal — Login</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" href="/water-quality-portal/css/app.css">
+</head>
+<body>
+<div class="login-wrap">
+    <div class="card">
+        <h1 style="margin-top:0">💧 Water Quality Portal</h1>
+        <p style="color:#64748b">Sampling lifecycle: collect → analyse → review → approve.</p>
+
+        <div th:if="${param.error}" class="alert error" id="loginError">Invalid username or password.</div>
+        <div th:if="${param.logout}" class="alert info">You have been logged out.</div>
+
+        <form th:action="@{/login}" method="post" id="loginForm">
+            <div class="field">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autocomplete="username">
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn" id="loginBtn" style="width:100%">Sign in</button>
+        </form>
+
+        <div class="card" style="background:#f8fafc;margin-top:1rem;margin-bottom:0">
+            <strong>Demo accounts</strong>
+            <table class="data">
+                <tr><td>admin / admin123</td><td>ADMIN</td></tr>
+                <tr><td>collector / collector123</td><td>COLLECTOR</td></tr>
+                <tr><td>analyst / analyst123</td><td>ANALYST</td></tr>
+                <tr><td>reviewer / reviewer123</td><td>REVIEWER</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

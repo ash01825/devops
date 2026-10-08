@@ -1,9 +1,13 @@
 package com.waterquality.portal.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "samples")
@@ -13,20 +17,25 @@ public class Sample {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Sample ID is required")
     @Column(nullable = false, unique = true)
     private String sampleId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @NotNull(message = "Station is required")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "station_id", nullable = false)
     private Station station;
 
+    @NotNull(message = "Collection date/time is required")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(nullable = false)
     private LocalDateTime collectedAt;
 
-    @NotBlank
+    @NotBlank(message = "Collector name is required")
     private String collector;
 
+    @DecimalMin(value = "0.0", message = "pH must be >= 0")
+    @DecimalMax(value = "14.0", message = "pH must be <= 14")
     private BigDecimal ph;
 
     private BigDecimal temperature;
@@ -51,6 +60,9 @@ public class Sample {
     void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = createdAt;
+        if (status == null) {
+            status = SampleStatus.DRAFT;
+        }
     }
 
     @PreUpdate
@@ -95,5 +107,8 @@ public class Sample {
     public void setNotes(String notes) { this.notes = notes; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

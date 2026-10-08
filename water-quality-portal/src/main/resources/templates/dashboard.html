@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Water Quality Portal — Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">💧 Water Quality Portal <small>· dashboard</small></div>
+    <nav class="nav">
+        <a th:href="@{/dashboard}" id="navDashboard">Dashboard</a>
+        <a th:href="@{/samples}" id="navSamples">Samples</a>
+        <a th:href="@{/samples/new}" id="navNew">+ New Sample</a>
+        <a th:href="@{/stations}" id="navStations" sec:authorize="hasRole('ADMIN')">Stations</a>
+    </nav>
+    <div class="userbox">
+        <span sec:authentication="name">user</span>
+        <span class="role" sec:authentication="principal.authorities">[ROLE]</span>
+        <form th:action="@{/logout}" method="post" style="display:inline">
+            <button class="linkbtn" type="submit" id="logoutBtn">Logout</button>
+        </form>
+    </div>
+</header>
+
+<div class="container">
+    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+
+    <div class="card">
+        <h2 id="summaryHeading">Summary — <span th:text="${totalCount}">0</span> samples</h2>
+        <div class="grid" id="statusCards">
+            <div class="stat" th:each="e : ${countsByStatus}">
+                <div class="num" th:text="${e.value}">0</div>
+                <div class="lbl" th:text="${e.key}">DRAFT</div>
+                <div><span class="badge" th:classappend="${e.key}" th:text="${e.key}">DRAFT</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Samples by station</h2>
+        <table class="data" id="stationTable">
+            <thead><tr><th>Station</th><th>Count</th></tr></thead>
+            <tbody>
+            <tr th:each="e : ${countsByStation}">
+                <td th:text="${e.key}">ST-01</td>
+                <td th:text="${e.value}">0</td>
+            </tr>
+            <tr th:if="${#maps.isEmpty(countsByStation)}"><td colspan="2">No samples yet.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Recent samples</h2>
+        <table class="data" id="recentTable">
+            <thead><tr><th>Sample ID</th><th>Station</th><th>Collected</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="s : ${recent}">
+                <td th:text="${s.sampleId}">WQ-0001</td>
+                <td th:text="${s.station.code}">ST-01</td>
+                <td th:text="${#temporals.format(s.collectedAt, 'yyyy-MM-dd HH:mm')}">date</td>
+                <td><span class="badge" th:classappend="${s.status}" th:text="${s.status}">DRAFT</span></td>
+                <td><a th:href="@{/samples/{id}(id=${s.id})}">View</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<footer class="footer">Water Quality Sampling Portal · DevOps MVP · DRAFT → SUBMITTED → UNDER_REVIEW → APPROVED | REJECTED</footer>
+</body>
+</html>

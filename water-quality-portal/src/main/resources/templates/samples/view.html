@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sample Detail</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">💧 Water Quality Portal</div>
+    <nav class="nav">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/samples}">Samples</a>
+        <a th:href="@{/stations}" sec:authorize="hasRole('ADMIN')">Stations</a>
+    </nav>
+    <div class="userbox">
+        <span sec:authentication="name">user</span>
+        <span class="role" sec:authentication="principal.authorities">[ROLE]</span>
+        <form th:action="@{/logout}" method="post" style="display:inline">
+            <button class="linkbtn" type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<div class="container">
+    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+    <div class="card">
+        <h2><span th:text="${sample.sampleId}">WQ-0001</span>
+            <span class="badge" id="statusBadge" th:classappend="${sample.status}" th:text="${sample.status}">DRAFT</span>
+        </h2>
+        <p><a th:href="@{/samples}">← Back to list</a> ·
+           <a th:href="@{/samples/{id}/edit(id=${sample.id})}" id="editLink">Edit measurements</a></p>
+
+        <dl class="detail">
+            <div><dt>Station</dt><dd th:text="${sample.station.code + ' — ' + sample.station.name}">ST-01</dd></div>
+            <div><dt>Collected</dt><dd th:text="${#temporals.format(sample.collectedAt, 'yyyy-MM-dd HH:mm')}">date</dd></div>
+            <div><dt>Collector</dt><dd th:text="${sample.collector}">collector</dd></div>
+            <div><dt>pH</dt><dd th:text="${sample.ph}">–</dd></div>
+            <div><dt>Temperature (°C)</dt><dd th:text="${sample.temperature}">–</dd></div>
+            <div><dt>Dissolved O₂ (mg/L)</dt><dd th:text="${sample.dissolvedOxygen}">–</dd></div>
+            <div><dt>Turbidity (NTU)</dt><dd th:text="${sample.turbidity}">–</dd></div>
+            <div><dt>Conductivity (µS/cm)</dt><dd th:text="${sample.conductivity}">–</dd></div>
+        </dl>
+        <p><strong>Notes:</strong> <span th:text="${sample.notes}">–</span></p>
+    </div>
+
+    <div class="card" th:if="${!#sets.isEmpty(nextStatuses)}">
+        <h2>Workflow actions</h2>
+        <p style="color:#64748b">Only actions permitted for your role will succeed — others are rejected server-side.</p>
+        <div class="workflow">
+            <form th:each="next : ${nextStatuses}" th:action="@{/samples/{id}/status(id=${sample.id})}"
+                  method="post" style="display:inline-flex;gap:0.4rem;align-items:center">
+                <input type="hidden" name="toStatus" th:value="${next}">
+                <input type="text" name="comment" th:id="${'comment-' + next}"
+                       placeholder="Comment (required to reject)" style="border:1px solid #e2e8f0;border-radius:8px;padding:0.45rem 0.6rem">
+                <button type="submit" class="btn small" th:id="${'btn-' + next}" th:text="${next}">SUBMITTED</button>
+            </form>
+        </div>
+    </div>
+    <div class="card" th:if="${#sets.isEmpty(nextStatuses)}">
+        <h2>Workflow</h2>
+        <p class="alert info">This sample is in a terminal state (APPROVED). No further transitions.</p>
+    </div>
+
+    <div class="card">
+        <h2>Audit history</h2>
+        <table class="data" id="historyTable">
+            <thead><tr><th>When</th><th>From → To</th><th>By</th><th>Comment</th></tr></thead>
+            <tbody>
+            <tr th:each="h : ${history}">
+                <td th:text="${#temporals.format(h.changedAt, 'yyyy-MM-dd HH:mm')}">when</td>
+                <td><span th:text="${h.fromStatus}">–</span> → <strong th:text="${h.toStatus}">DRAFT</strong></td>
+                <td th:text="${h.changedBy}">user</td>
+                <td th:text="${h.comment}">comment</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(history)}"><td colspan="4">No history yet.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

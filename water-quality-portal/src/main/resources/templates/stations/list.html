@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Stations</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">💧 Water Quality Portal <small>· stations (admin)</small></div>
+    <nav class="nav">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/samples}">Samples</a>
+        <a th:href="@{/stations}">Stations</a>
+    </nav>
+    <div class="userbox">
+        <span sec:authentication="name">user</span>
+        <form th:action="@{/logout}" method="post" style="display:inline">
+            <button class="linkbtn" type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+<div class="container">
+    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+    <div class="card">
+        <h2>Sampling stations <a class="btn small" th:href="@{/stations/new}" id="newStationBtn">+ New station</a></h2>
+        <table class="data" id="stationsTable">
+            <thead><tr><th>Code</th><th>Name</th><th>Water body</th><th>Lat / Lon</th></tr></thead>
+            <tbody>
+            <tr th:each="s : ${stations}">
+                <td th:text="${s.code}">ST-01</td>
+                <td th:text="${s.name}">Name</td>
+                <td th:text="${s.waterBody}">Body</td>
+                <td th:text="${s.latitude + ' / ' + s.longitude}">lat/lon</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

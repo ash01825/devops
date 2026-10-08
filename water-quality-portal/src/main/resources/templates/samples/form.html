@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${isEdit} ? 'Edit Sample' : 'New Sample'">New Sample</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">💧 Water Quality Portal</div>
+    <nav class="nav">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/samples}">Samples</a>
+    </nav>
+    <div class="userbox">
+        <span sec:authentication="name">user</span>
+        <form th:action="@{/logout}" method="post" style="display:inline">
+            <button class="linkbtn" type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2 th:text="${isEdit} ? 'Edit Sample' : 'New Sample'">New Sample</h2>
+        <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+        <form th:action="${isEdit} ? @{/samples/{id}(id=${sample.id})} : @{/samples}"
+              th:object="${sample}" method="post" id="sampleForm">
+            <div class="form-grid">
+                <div class="field">
+                    <label for="sampleId">Sample ID *</label>
+                    <input type="text" id="sampleId" th:field="*{sampleId}"
+                           th:readonly="${isEdit}" placeholder="e.g. WQ-0101" required>
+                    <div class="err" th:if="${#fields.hasErrors('sampleId')}" th:errors="*{sampleId}"></div>
+                </div>
+                <div class="field">
+                    <label for="station">Station *</label>
+                    <select id="station" th:field="*{station}" required>
+                        <option value="">-- Select --</option>
+                        <option th:each="stn : ${stations}" th:value="${stn.id}"
+                                th:text="${stn.code + ' — ' + stn.name}">ST-01</option>
+                    </select>
+                    <div class="err" th:if="${#fields.hasErrors('station')}" th:errors="*{station}"></div>
+                </div>
+                <div class="field">
+                    <label for="collectedAt">Collected At *</label>
+                    <input type="datetime-local" id="collectedAt" th:field="*{collectedAt}" required>
+                    <div class="err" th:if="${#fields.hasErrors('collectedAt')}" th:errors="*{collectedAt}"></div>
+                </div>
+                <div class="field">
+                    <label for="collector">Collector *</label>
+                    <input type="text" id="collector" th:field="*{collector}" required>
+                </div>
+                <div class="field">
+                    <label for="ph">pH (0–14)</label>
+                    <input type="number" step="0.01" min="0" max="14" id="ph" th:field="*{ph}">
+                    <div class="err" th:if="${#fields.hasErrors('ph')}" th:errors="*{ph}"></div>
+                </div>
+                <div class="field">
+                    <label for="temperature">Temperature (°C)</label>
+                    <input type="number" step="0.1" id="temperature" th:field="*{temperature}">
+                </div>
+                <div class="field">
+                    <label for="dissolvedOxygen">Dissolved O₂ (mg/L)</label>
+                    <input type="number" step="0.01" id="dissolvedOxygen" th:field="*{dissolvedOxygen}">
+                </div>
+                <div class="field">
+                    <label for="turbidity">Turbidity (NTU)</label>
+                    <input type="number" step="0.01" id="turbidity" th:field="*{turbidity}">
+                </div>
+                <div class="field">
+                    <label for="conductivity">Conductivity (µS/cm)</label>
+                    <input type="number" step="0.1" id="conductivity" th:field="*{conductivity}">
+                </div>
+            </div>
+            <div class="field">
+                <label for="notes">Notes</label>
+                <textarea id="notes" rows="3" th:field="*{notes}"></textarea>
+            </div>
+            <button type="submit" class="btn" id="saveBtn" th:text="${isEdit} ? 'Save changes' : 'Create sample'">Create</button>
+            <a class="btn secondary" th:href="${isEdit} ? @{/samples/{id}(id=${sample.id})} : @{/samples}">Cancel</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

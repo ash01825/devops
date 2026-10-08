@@ -1,0 +1,137 @@
+# ============================================================
+# Water Quality Sampling Portal — deploy playbook (local staging)
+# Idempotent: safe to re-run; second run reports changed=0.
+# Usage:
+#   ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
+#   ansible-playbook -i ansible/inventory.ini ansible/playbook.yml -e app_version=1.0.1
+# Requires collections: ansible/requirements.yml (community.docker, ansible.posix)
+# ============================================================
+
+- name: Deploy Water Quality Sampling Portal stack
+  hosts: portal
+  become: false
+  vars:
+    app_version: "1.0.0"
+    app_port: 8080
+    db_name: waterquality
+    db_user: wquser
+    db_password: wqpass
+    app_context: water-quality-portal
+    repo_root: "{{ playbook_dir }}/.."
+    deploy_dir: /opt/wq-portal
+    compose_project: wq-portal
+
+  tasks:
+    # ---- 1. Packages (documented; homebrew path for macOS) ----
+    - name: Ensure base tooling is present (macOS/Homebrew note)
+      ansible.builtin.debug:
+        msg: "Requires curl + docker. Install with: brew install curl docker"
+      changed_when: false
+
+    - name: Check curl is installed
+      ansible.builtin.command: curl --version
+      register: curl_check
+      changed_when: false
+      failed_when: false
+
+    - name: Check docker is installed
+      ansible.builtin.command: docker --version
+      register: docker_check
+      changed_when: false
+      failed_when: false
+
+    - name: Assert required CLIs exist
+      ansible.builtin.assert:
+        that:
+          - curl_check.rc == 0
+          - docker_check.rc == 0
+        fail_msg: "Missing curl or docker. On macOS: brew install curl docker."
+
+    # ---- 2. Users / groups (documented for local deploy) ----
+    - name: Record deploy identity (local run uses current user, no new users)
+      ansible.builtin.command: whoami
+      register: deploy_user
+      changed_when: false
+
+    - name: Show deploy user
+      ansible.builtin.debug:
+        msg: "Deploying as local user {{ deploy_user.stdout }} (no dedicated service user created for local staging)."
+      changed_when: false
+
+    # ---- 3. Folders (idempotent, state=directory) ----
+    - name: Ensure deploy directory exists
+      ansible.builtin.file:
+        path: "{{ deploy_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Ensure local postgres data dir exists (repo-relative)
+      ansible.builtin.file:
+        path: "{{ repo_root }}/postgres_data"
+        state: directory
+        mode: "0755"
+
+    # ---- 4. Ship compose file (template via copy with env) ----
+    - name: Ensure deploy compose file is present
+      ansible.builtin.copy:
+        src: "{{ repo_root }}/docker/docker-compose.yml"
+        dest: "{{ deploy_dir }}/docker-compose.yml"
+        mode: "0644"
+      notify: Restart app stack
+
+    # ---- 5. Pull / start containers (idempotent) ----
+    - name: Pull db image (idempotent)
+      community.docker.docker_image:
+        name: postgres:16-alpine
+        source: pull
+      register: db_pull
+
+    - name: Start portal stack with compose v2
+      community.docker.docker_compose_v2:
+        project_src: "{{ deploy_dir }}"
+        project_name: "{{ compose_project }}"
+        state: present
+        pull: missing
+      register: compose_up
+      environment:
+        APP_VERSION: "{{ app_version }}"
+
+    - name: Fallback — start stack via shell if compose module unavailable
+      ansible.builtin.shell:
+        cmd: docker compose -p {{ compose_project }} -f {{ deploy_dir }}/docker-compose.yml up -d
+        creates: /tmp/.wq-portal-compose-up
+      when: false  # kept as documented fallback; module above is the primary path
+
+    # ---- 6. Wait for port + health check ----
+    - name: Wait for app port to open
+      ansible.builtin.wait_for:
+        host: "127.0.0.1"
+        port: "{{ app_port }}"
+        delay: 5
+        timeout: 180
+
+    - name: Health-check actuator endpoint (expect HTTP 200)
+      ansible.builtin.uri:
+        url: "http://localhost:{{ app_port }}/{{ app_context }}/actuator/health"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: health
+      retries: 12
+      delay: 10
+      until: health.status == 200
+
+    - name: Show health response
+      ansible.builtin.debug:
+        var: health.json
+      changed_when: false
+      failed_when: false
+
+  handlers:
+    - name: Restart app stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ deploy_dir }}"
+        project_name: "{{ compose_project }}"
+        state: restarted
+        pull: missing
+      listen: Restart app stack

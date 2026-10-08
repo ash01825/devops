@@ -16,7 +16,7 @@ public class StatusHistory {
     private Sample sample;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private SampleStatus fromStatus;
 
     @Enumerated(EnumType.STRING)
