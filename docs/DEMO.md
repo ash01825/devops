@@ -18,8 +18,8 @@ cd water-quality-portal
 mvn -B verify
 ```
 
-Expected: `BUILD SUCCESS`, surefire + failsafe reports, Selenium screenshots dir
-`target/selenium-failures/` empty (only created on failure).
+Expected: `BUILD SUCCESS`, surefire reports (`target/surefire-reports/`),
+Selenium screenshots dir `target/selenium-failures/` only created on failure.
 
 ## 2. Login → create → submit → approve click-path
 
@@ -28,10 +28,10 @@ Expected: `BUILD SUCCESS`, surefire + failsafe reports, Selenium screenshots dir
 3. **Samples → New Sample**: ID `WQ-0101`, station `ST-01`, collectedAt yesterday,
    collector name, pH `7.2` → Save. Expected: detail page, `#statusBadge` = `DRAFT`,
    flash `Sample WQ-0101 created.`
-4. Click **Submit** (`btn-SUBMITTED`). Expected: badge `SUBMITTED` + history row.
-5. Logout; login `analyst/analyst123` → open WQ-0101 → **Start Review**.
+4. Click the **SUBMITTED** button (`btn-SUBMITTED`). Expected: badge `SUBMITTED` + history row.
+5. Logout; login `analyst/analyst123` → open WQ-0101 → click **UNDER_REVIEW**.
    Expected: `UNDER_REVIEW`.
-6. Logout; login `reviewer/reviewer123` → open WQ-0101 → **Approve**.
+6. Logout; login `reviewer/reviewer123` → open WQ-0101 → click **APPROVED**.
    Expected: `APPROVED`, history shows all transitions with who/when.
 
 ## 3. Dashboard counts
