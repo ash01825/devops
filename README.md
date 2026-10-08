@@ -92,4 +92,4 @@ git push → Jenkins (checkout → build → unit test → Selenium gate)
 ## Git workflow
 
 Single branch `master`, meaningful commits (`feat/fix/docs/chore/test/ci/build`),
-release tags like `v1.0.0` (annotated, on master).
+release tags like `v1.0.0` (annotated, on master — see `docs/15-final-release.md`).
