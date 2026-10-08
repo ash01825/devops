@@ -17,7 +17,9 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      # Host 5433 (host 5432 is commonly taken by a native Postgres).
+      # The app still reaches the DB internally at db:5432.
+      - "${DB_HOST_PORT:-5433}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U wquser -d waterquality"]
       interval: 10s

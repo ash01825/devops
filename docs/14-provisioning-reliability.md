@@ -48,6 +48,11 @@ Rollback stops `wq-portal-app`, starts `water-quality-portal:<prev_version>`
 1. `conda run -n os python scripts/health_check.py` — see which probe failed.
 2. `docker compose -f docker/docker-compose.yml ps; docker logs wq-portal-app` (or
    `docker logs wq-portal-db` if `pg_isready` fails).
-3. Port clash? `lsof -i :8080 -i :5432`, stop the holder.
+3. Port clash? `lsof -i :8080 -i :5433`; the compose file maps the DB to host port 5433 (`DB_HOST_PORT`) because native Postgres often owns 5432.
 4. DB not ready? Confirm `db` is `healthy` — app `depends_on: service_healthy`.
 5. Still red? Roll back to last known-good tag (above) and verify health 200.
+
+> Note: run Ansible with the conda `os` interpreter so the `requests`/`docker`
+> libraries resolve, and override `deploy_dir` when `/opt` is not writable:
+> `conda run -n os ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
+> -e ansible_python_interpreter=$(conda run -n os which python) -e deploy_dir=$HOME/wq-portal-deploy`

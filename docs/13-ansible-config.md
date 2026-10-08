@@ -13,7 +13,7 @@
 | User | Current local user (no new users for local staging) | `whoami` (playbook records it) |
 | Folders | `/opt/wq-portal` (deploy), `./postgres_data` (db helper) | Playbook `file: state=directory` |
 | Files | `docker/docker-compose.yml` → `/opt/wq-portal/docker-compose.yml` | Playbook `copy` task |
-| Ports | `8080` (app), `5432` (postgres) free | `lsof -i :8080 -i :5432` |
+| Ports | `8080` (app), `5433` (postgres host map) free | `lsof -i :8080 -i :5433` |
 | Services | `db` + `app` via compose; Docker daemon running | `docker info` |
 
 ## inventory.ini
@@ -56,3 +56,8 @@ ansible-playbook -i ansible/inventory.ini ansible/playbook.yml  # expect changed
 ```
 
 Ends with `PLAY RECAP ... failed=0` and the health-check `ok`.
+
+> Note: run Ansible with the conda `os` interpreter so the `requests`/`docker`
+> libraries resolve, and override `deploy_dir` when `/opt` is not writable:
+> `conda run -n os ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
+> -e ansible_python_interpreter=$(conda run -n os which python) -e deploy_dir=$HOME/wq-portal-deploy`

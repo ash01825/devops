@@ -79,3 +79,8 @@ git show v1.0.0 --stat | head
 ```
 
 Expected: `feat/fix/docs/ci` commits on `master`, tag `v1.0.0` on MVP completion.
+
+> Note: run Ansible with the conda `os` interpreter so the `requests`/`docker`
+> libraries resolve, and override `deploy_dir` when `/opt` is not writable:
+> `conda run -n os ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
+> -e ansible_python_interpreter=$(conda run -n os which python) -e deploy_dir=$HOME/wq-portal-deploy`

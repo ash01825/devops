@@ -33,13 +33,15 @@ else
   python3 scripts/health_check.py --base-url "$BASE_URL"
 fi
 
-echo "=== [5/5] Selenium note ==="
+echo "=== [5/5] Selenium suite (already ran inside mvn verify) ==="
 cat <<'EOF'
-Selenium E2E (requires Chrome/Chromium + matching chromedriver on PATH):
+Selenium journeys (headless Chrome via WebDriverManager, no manual driver setup):
   cd water-quality-portal
-  mvn -B verify -Dtest=SeleniumSuite -DfailIfNoTests=false || mvn -B verify
-Headless CI: export HEADLESS=true (see suite config). Jenkins runs this in the
-'Selenium Quality Gate' stage; pass SKIP_SELENIUM=true only if no browser exists.
+  mvn -B test -Dtest='WaterQualitySeleniumTest'   # 5 journeys: login, create,
+                                                  # search, workflow, dashboard
+Failure artefacts: target/selenium-failures/ (screenshot + page-source HTML).
+Jenkins runs the same class in the 'Selenium Quality Gate' stage; pass
+SKIP_SELENIUM=true only if the agent has no browser at all.
 EOF
 
 echo "=== Demo complete: $BASE_URL (image water-quality-portal:${APP_VERSION}) ==="

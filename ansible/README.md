@@ -19,7 +19,7 @@ conda activate os
 | Users | Current local user (no new users for local staging) | `whoami` (playbook records it) |
 | Folders | `/opt/wq-portal` (deploy), `./postgres_data` (db volume helper) | Created by playbook (`state: directory`) |
 | Files | `docker/docker-compose.yml` (source), `/opt/wq-portal/docker-compose.yml` (deployed copy) | Playbook `copy` task ships it |
-| Ports | `8080` (app), `5432` (postgres) free | `lsof -i :8080 -i :5432` |
+| Ports | `8080` (app), `5433` (postgres host map) free | `lsof -i :8080 -i :5433` |
 | Services | Docker daemon running | `docker info` |
 
 Install collections once:
@@ -90,3 +90,8 @@ The rollback play stops the current app container, starts
 conda run -n os ansible-playbook -i ansible/inventory.ini ansible/playbook.yml --check   # dry run
 conda run -n os ansible-playbook -i ansible/inventory.ini ansible/playbook.yml --syntax-check
 ```
+
+> Note: run Ansible with the conda `os` interpreter so the `requests`/`docker`
+> libraries resolve, and override `deploy_dir` when `/opt` is not writable:
+> `conda run -n os ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
+> -e ansible_python_interpreter=$(conda run -n os which python) -e deploy_dir=$HOME/wq-portal-deploy`

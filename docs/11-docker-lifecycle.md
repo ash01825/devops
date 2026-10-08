@@ -34,7 +34,7 @@ docker rm -f wq-portal-app
 
 ## Docker Compose (postgres:16-alpine + app)
 
-- `db`: `postgres:16-alpine`, volume `pgdata`, port `5432:5432`,
+- `db`: `postgres:16-alpine`, volume `pgdata`, port `${DB_HOST_PORT:-5433}:5432` (host 5433, container 5432),
   healthcheck `pg_isready -U wquser -d waterquality`.
 - `app`: builds from `..`/`docker/Dockerfile`, image `water-quality-portal:1.0.0`,
   port `8080:8080`, `depends_on: db service_healthy`, datasource env pointing at `db`.
