@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Water Quality Portal — Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230e7490' d='M12 2C12 2 5 10 5 15a7 7 0 0 0 14 0C19 10 12 2 12 2z'/%3E%3C/svg%3E">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
@@ -57,6 +58,7 @@
         <table class="data" id="recentTable">
             <thead><tr><th>Sample ID</th><th>Station</th><th>Collected</th><th>Status</th><th></th></tr></thead>
             <tbody>
+            <tr th:if="${#lists.isEmpty(recent)}"><td colspan="5">No samples yet.</td></tr>
             <tr th:each="s : ${recent}">
                 <td th:text="${s.sampleId}">WQ-0001</td>
                 <td th:text="${s.station.code}">ST-01</td>

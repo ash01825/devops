@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Stations</title>
+    <title>Water Quality Portal — Stations</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230e7490' d='M12 2C12 2 5 10 5 15a7 7 0 0 0 14 0C19 10 12 2 12 2z'/%3E%3C/svg%3E">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
@@ -12,17 +13,20 @@
     <nav class="nav">
         <a th:href="@{/dashboard}">Dashboard</a>
         <a th:href="@{/samples}">Samples</a>
-        <a th:href="@{/stations}">Stations</a>
+        <a th:href="@{/samples/new}">+ New Sample</a>
+        <a th:href="@{/stations}" sec:authorize="hasRole('ADMIN')">Stations</a>
     </nav>
     <div class="userbox">
         <span sec:authentication="name">user</span>
+        <span class="role" sec:authentication="principal.authorities">[ROLE]</span>
         <form th:action="@{/logout}" method="post" style="display:inline">
             <button class="linkbtn" type="submit">Logout</button>
         </form>
     </div>
 </header>
 <div class="container">
-    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+    <div th:if="${success}" class="alert success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert error" role="alert" th:text="${error}"></div>
     <div class="card">
         <h2>Sampling stations <a class="btn small" th:href="@{/stations/new}" id="newStationBtn">+ New station</a></h2>
         <table class="data" id="stationsTable">
@@ -34,9 +38,11 @@
                 <td th:text="${s.waterBody}">Body</td>
                 <td th:text="${s.latitude + ' / ' + s.longitude}">lat/lon</td>
             </tr>
+            <tr th:if="${#lists.isEmpty(stations)}"><td colspan="4">No stations yet.</td></tr>
             </tbody>
         </table>
     </div>
 </div>
+<footer class="footer">Water Quality Sampling Portal · DevOps MVP · DRAFT → SUBMITTED → UNDER_REVIEW → APPROVED | REJECTED</footer>
 </body>
 </html>

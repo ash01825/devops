@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Water Quality Portal — Login</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230e7490' d='M12 2C12 2 5 10 5 15a7 7 0 0 0 14 0C19 10 12 2 12 2z'/%3E%3C/svg%3E">
     <link rel="stylesheet" th:href="@{/css/app.css}" href="/water-quality-portal/css/app.css">
 </head>
 <body>
 <div class="login-wrap">
     <div class="card">
         <h1 style="margin-top:0">💧 Water Quality Portal</h1>
-        <p style="color:#64748b">Sampling lifecycle: collect → analyse → review → approve.</p>
+        <p style="color:#64748b">Sample lifecycle: DRAFT → SUBMITTED → UNDER_REVIEW → APPROVED | REJECTED.</p>
 
-        <div th:if="${param.error}" class="alert error" id="loginError">Invalid username or password.</div>
+        <div th:if="${param.error}" class="alert error" role="alert" id="loginError">Invalid username or password.</div>
         <div th:if="${param.logout}" class="alert info">You have been logged out.</div>
 
         <form th:action="@{/login}" method="post" id="loginForm">
@@ -38,5 +39,6 @@
         </div>
     </div>
 </div>
+<footer class="footer">Water Quality Sampling Portal · DevOps MVP · DRAFT → SUBMITTED → UNDER_REVIEW → APPROVED | REJECTED</footer>
 </body>
 </html>
