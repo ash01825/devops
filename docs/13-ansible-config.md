@@ -21,16 +21,11 @@
 ```ini
 [portal]
 localhost ansible_connection=local
-
-[portal:vars]
-app_version=1.0.0
-app_port=8080
-db_name=waterquality
-db_user=wquser
-db_password=wqpass
-app_context=water-quality-portal
-app_url=http://localhost:8080/water-quality-portal
 ```
+
+Tunables (`app_version`, `app_port`, `db_*`, `admin_password`, `deploy_dir`)
+live as defaults in `playbook.yml` `vars:` — one source of truth.
+Override per run, e.g. `-e app_version=1.0.1 -e admin_password=secret`.
 
 ## playbook.yml task summary
 
@@ -52,7 +47,7 @@ app_url=http://localhost:8080/water-quality-portal
 ```bash
 conda activate os
 ansible-galaxy collection install -r ansible/requirements.yml   # once
-ansible-playbook -i ansible/inventory.ini ansible/playbook.yml  # expect changed=5-ish
+ansible-playbook -i ansible/inventory.ini ansible/playbook.yml  # first run converges (changed>0)
 ```
 
 Ends with `PLAY RECAP ... failed=0` and the health-check `ok`.

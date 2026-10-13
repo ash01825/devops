@@ -13,6 +13,7 @@
     <nav class="nav">
         <a th:href="@{/dashboard}">Dashboard</a>
         <a th:href="@{/samples}">Samples</a>
+        <a th:href="@{/samples/new}">+ New Sample</a>
         <a th:href="@{/stations}" sec:authorize="hasRole('ADMIN')">Stations</a>
     </nav>
     <div class="userbox">

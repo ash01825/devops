@@ -32,6 +32,10 @@ public class StationService {
     }
 
     public Station save(Station station) {
+        stationRepository.findByCode(station.getCode()).ifPresent(existing -> {
+            throw new IllegalArgumentException(
+                    "Station code already exists: " + station.getCode());
+        });
         return stationRepository.save(station);
     }
 }

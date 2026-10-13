@@ -5,6 +5,7 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,6 +28,7 @@ public class Sample {
     private Station station;
 
     @NotNull(message = "Collection date/time is required")
+    @PastOrPresent(message = "Collection date/time cannot be in the future")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(nullable = false)
     private LocalDateTime collectedAt;
@@ -38,12 +40,18 @@ public class Sample {
     @DecimalMax(value = "14.0", message = "pH must be <= 14")
     private BigDecimal ph;
 
+    @DecimalMin(value = "-10.0", message = "Temperature looks too low")
+    @DecimalMax(value = "60.0", message = "Temperature looks too high")
     private BigDecimal temperature;
 
+    @DecimalMin(value = "0.0", message = "Dissolved oxygen cannot be negative")
+    @DecimalMax(value = "20.0", message = "Dissolved oxygen looks too high")
     private BigDecimal dissolvedOxygen;
 
+    @DecimalMin(value = "0.0", message = "Turbidity cannot be negative")
     private BigDecimal turbidity;
 
+    @DecimalMin(value = "0.0", message = "Conductivity cannot be negative")
     private BigDecimal conductivity;
 
     @Enumerated(EnumType.STRING)

@@ -70,14 +70,14 @@ def main() -> int:
         failures.append("actuator")
 
     # 2. Security gate on /samples (no redirect-following here)
-    status, _ = fetch(f"{base}/samples", follow_redirects=False)
+    status, body = fetch(f"{base}/samples", follow_redirects=False)
     print(f"[auth]   GET {base}/samples (no redirect) -> {status}")
     if status == 302:
         print("[auth]   OK: anonymous /samples redirects to login (gate working)")
-    elif status == 200:
-        print("[auth]   OK: /samples serves content")
+    elif status == 200 and 'id="samplesTable"' in body:
+        print("[auth]   OK: /samples serves the samples table")
     else:
-        print("[auth]   FAIL: unexpected status for /samples")
+        print("[auth]   FAIL: unexpected status/body for /samples")
         failures.append("auth-gate")
 
     # 3. Login page renders

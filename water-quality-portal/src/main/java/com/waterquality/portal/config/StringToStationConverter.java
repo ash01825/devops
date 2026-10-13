@@ -23,7 +23,13 @@ public class StringToStationConverter implements Converter<String, Station> {
         if (source == null || source.isBlank()) {
             return null;
         }
-        return stations.findById(Long.valueOf(source.trim()))
+        final long id;
+        try {
+            id = Long.parseLong(source.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Unknown station: " + source);
+        }
+        return stations.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown station: " + source));
     }
 }

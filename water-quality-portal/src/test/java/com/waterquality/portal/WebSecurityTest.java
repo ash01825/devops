@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -89,7 +90,7 @@ class WebSecurityTest {
     }
 
     @Test
-    void loginPageElementsExist() throws Exception {
+    void anonymousLoginPageRenders() throws Exception {
         mvc.perform(get("/login")).andExpect(status().isOk());
     }
 
@@ -122,5 +123,17 @@ class WebSecurityTest {
                         .param("toStatus", "APPROVED"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login*"));
+    }
+
+    @Test
+    @WithMockUser(username = "collector", roles = "COLLECTOR")
+    void authenticatedIllegalTransitionRedirectsBackWithFlashError() throws Exception {
+        // Collector trying to APPROVE straight from DRAFT: service throws,
+        // controller catches and redirects to the detail page (no 500).
+        Long draftId = samples.findBySampleId("WQ-0001").orElseThrow().getId();
+        mvc.perform(post("/samples/" + draftId + "/status").with(csrf())
+                        .param("toStatus", "APPROVED"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/samples/" + draftId));
     }
 }

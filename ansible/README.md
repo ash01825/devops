@@ -15,7 +15,7 @@ conda activate os
 | Category | Requirement | Check / setup |
 |---|---|---|
 | Packages | Python 3.10+, ansible-core 2.15+, curl, Docker 24+ | `conda run -n os ansible --version`; `brew install curl docker` |
-| Collections | `community.docker`, `ansible.posix` | `ansible-galaxy collection install -r ansible/requirements.yml` |
+| Collections | `community.docker` | `ansible-galaxy collection install -r ansible/requirements.yml` |
 | Users | Current local user (no new users for local staging) | `whoami` (playbook records it) |
 | Folders | `/opt/wq-portal` (deploy), `./postgres_data` (db volume helper) | Created by playbook (`state: directory`) |
 | Files | `docker/docker-compose.yml` (source), `/opt/wq-portal/docker-compose.yml` (deployed copy) | Playbook `copy` task ships it |

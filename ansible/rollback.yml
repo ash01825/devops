@@ -48,7 +48,10 @@
       environment:
         APP_VERSION: "{{ prev_version }}"
       register: compose_switch
-      changed_when: "'Started' in compose_switch.stdout or 'Recreated' in compose_switch.stdout or 'Creating' in compose_switch.stdout"
+      changed_when: >-
+        'started' in (compose_switch.stdout + compose_switch.stderr) | lower
+        or 'recreated' in (compose_switch.stdout + compose_switch.stderr) | lower
+        or 'created' in (compose_switch.stdout + compose_switch.stderr) | lower
 
     - name: Wait for app port to open after rollback
       ansible.builtin.wait_for:

@@ -54,7 +54,7 @@ then reverted — the rubric's red → fix → green cycle:
   `selenium-failure.png`/`.html` (Submit button never appears, journey times out).
 - **Fix:** one-line revert restoring `Set.of(Role.COLLECTOR, Role.ADMIN)`
   (see `docs/evidence/gate-fail/README.md`).
-- **Green:** both tests re-run green; full suite (31 tests) green in
+- **Green:** both tests re-run green; full suite (32 tests) green in
   `docs/evidence/jenkins-pipeline-rehearsal.log`.
 - Related hardening commits on this branch (`feature/viva-polish`):
   `0300075` (fail-closed security, error pages, prod-safe seeds),

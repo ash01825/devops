@@ -28,7 +28,8 @@
             <button type="submit" class="btn" id="loginBtn" style="width:100%">Sign in</button>
         </form>
 
-        <div class="card" style="background:#f8fafc;margin-top:1rem;margin-bottom:0">
+        <div class="card" th:if="${@environment.getProperty('spring.profiles.active','default') != 'prod'}"
+             style="background:#f8fafc;margin-top:1rem;margin-bottom:0">
             <strong>Demo accounts</strong>
             <table class="data">
                 <tr><td>admin / admin123</td><td>ADMIN</td></tr>

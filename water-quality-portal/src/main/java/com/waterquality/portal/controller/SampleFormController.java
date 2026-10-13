@@ -75,6 +75,7 @@ public class SampleFormController {
                          BindingResult bindingResult, Model model,
                          RedirectAttributes redirect) {
         if (bindingResult.hasErrors()) {
+            form.setId(id); // keep action/cancel URLs working on re-render
             model.addAttribute("stations", stationService.findAll());
             model.addAttribute("isEdit", true);
             return "samples/form";

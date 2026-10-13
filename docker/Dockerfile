@@ -20,10 +20,10 @@ RUN mvn -B package -DskipTests
 FROM tomcat:10.1-jdk21-temurin
 
 # Remove default Tomcat apps so only our portal is deployed
-RUN rm -rf webapps/*
+RUN rm -rf "$CATALINA_HOME"/webapps/*
 
 # Deploy the WAR built in stage 1 under the required context path
-COPY --from=builder /build/water-quality-portal/target/water-quality-portal.war webapps/water-quality-portal.war
+COPY --from=builder /build/water-quality-portal/target/water-quality-portal.war "$CATALINA_HOME"/webapps/water-quality-portal.war
 
 # Runtime configuration (overridable at `docker run -e` / compose).
 # The app reads DB_URL/DB_USER/DB_PASS in prod (explicit placeholders in

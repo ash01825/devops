@@ -61,9 +61,8 @@ public class SampleService {
         if (sample.getSampleId() == null || sample.getSampleId().isBlank()) {
             throw new IllegalArgumentException("Sample ID is required");
         }
-        if (sample.getStatus() == null) {
-            sample.setStatus(SampleStatus.DRAFT);
-        }
+        // New records always start as DRAFT: a posted status is untrusted input.
+        sample.setStatus(SampleStatus.DRAFT);
         if (sampleRepository.findBySampleId(sample.getSampleId()).isPresent()) {
             throw new IllegalArgumentException("Sample ID already exists: " + sample.getSampleId());
         }

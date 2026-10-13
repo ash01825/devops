@@ -48,9 +48,4 @@ public class ApiController {
                                 e -> e.getKey().name(), Map.Entry::getValue)),
                 "byStation", sampleService.countsByStation());
     }
-
-    @GetMapping("/auth/login")
-    public Map<String, String> loginInfo() {
-        return Map.of("login", "/login", "note", "Use form login at /login");
-    }
 }

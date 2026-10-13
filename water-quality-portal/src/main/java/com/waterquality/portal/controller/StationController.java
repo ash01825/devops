@@ -38,7 +38,7 @@ public class StationController {
 
     @PostMapping
     public String create(@Valid @ModelAttribute("station") Station station,
-                         BindingResult bindingResult,
+                         BindingResult bindingResult, Model model,
                          RedirectAttributes redirect) {
         if (bindingResult.hasErrors()) {
             return "stations/form";
@@ -47,9 +47,9 @@ public class StationController {
             Station saved = stationService.save(station);
             redirect.addFlashAttribute("success", "Station " + saved.getCode() + " created.");
             return "redirect:/stations";
-        } catch (Exception e) {
-            redirect.addFlashAttribute("error", "Could not create station: " + e.getMessage());
-            return "redirect:/stations/new";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "stations/form";
         }
     }
 }

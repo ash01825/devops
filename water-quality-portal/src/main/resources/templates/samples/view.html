@@ -40,13 +40,13 @@
             <div><dt>Station</dt><dd th:text="${sample.station.code + ' — ' + sample.station.name}">ST-01</dd></div>
             <div><dt>Collected</dt><dd th:text="${#temporals.format(sample.collectedAt, 'yyyy-MM-dd HH:mm')}">date</dd></div>
             <div><dt>Collector</dt><dd th:text="${sample.collector}">collector</dd></div>
-            <div><dt>pH</dt><dd th:text="${sample.ph}">–</dd></div>
-            <div><dt>Temperature (°C)</dt><dd th:text="${sample.temperature}">–</dd></div>
-            <div><dt>Dissolved O₂ (mg/L)</dt><dd th:text="${sample.dissolvedOxygen}">–</dd></div>
-            <div><dt>Turbidity (NTU)</dt><dd th:text="${sample.turbidity}">–</dd></div>
-            <div><dt>Conductivity (µS/cm)</dt><dd th:text="${sample.conductivity}">–</dd></div>
+            <div><dt>pH</dt><dd th:text="${sample.ph ?: '–'}">–</dd></div>
+            <div><dt>Temperature (°C)</dt><dd th:text="${sample.temperature ?: '–'}">–</dd></div>
+            <div><dt>Dissolved O₂ (mg/L)</dt><dd th:text="${sample.dissolvedOxygen ?: '–'}">–</dd></div>
+            <div><dt>Turbidity (NTU)</dt><dd th:text="${sample.turbidity ?: '–'}">–</dd></div>
+            <div><dt>Conductivity (µS/cm)</dt><dd th:text="${sample.conductivity ?: '–'}">–</dd></div>
         </dl>
-        <p><strong>Notes:</strong> <span th:text="${sample.notes}">–</span></p>
+        <p><strong>Notes:</strong> <span th:text="${sample.notes ?: '–'}">–</span></p>
     </div>
 
     <div class="card" th:if="${!#sets.isEmpty(nextStatuses)}">

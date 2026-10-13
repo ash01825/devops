@@ -36,7 +36,7 @@
                 <td th:text="${s.code}">ST-01</td>
                 <td th:text="${s.name}">Name</td>
                 <td th:text="${s.waterBody}">Body</td>
-                <td th:text="${s.latitude + ' / ' + s.longitude}">lat/lon</td>
+                <td th:text="${(s.latitude ?: '—') + ' / ' + (s.longitude ?: '—')}">lat/lon</td>
             </tr>
             <tr th:if="${#lists.isEmpty(stations)}"><td colspan="4">No stations yet.</td></tr>
             </tbody>

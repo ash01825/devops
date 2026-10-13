@@ -55,7 +55,7 @@ Full click-path + evidence checklist: see `job-config.md`.
 
 | Item | Value |
 |---|---|
-| `ENV_NAME` (string) | `staging` default; deploy container is named `wq-portal-app-<ENV_NAME>` |
+| `ENV_NAME` (string) | `staging` default; labels the run and names the fallback `docker run` container (`wq-portal-app-<ENV_NAME>`); compose deploys use the pinned project `wq-portal` |
 | `SKIP_SELENIUM` (bool) | `false` default; skips Selenium gate when `true` |
 | `APP_VERSION` (env) | `git describe --tags --always`, fallback `1.0.0` |
 | Poll trigger | `H/2 * * * *` — any commit is picked up within ~2 min |

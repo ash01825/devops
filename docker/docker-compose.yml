@@ -17,9 +17,9 @@ services:
     container_name: wq-portal-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: waterquality
-      POSTGRES_USER: wquser
-      POSTGRES_PASSWORD: wqpass
+      POSTGRES_DB: ${DB_NAME:-waterquality}
+      POSTGRES_USER: ${DB_USER:-wquser}
+      POSTGRES_PASSWORD: ${DB_PASS:-wqpass}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:

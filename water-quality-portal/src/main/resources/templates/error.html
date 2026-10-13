@@ -13,7 +13,14 @@
     <nav class="nav">
         <a th:href="@{/dashboard}">Dashboard</a>
         <a th:href="@{/samples}">Samples</a>
+        <a th:href="@{/samples/new}">+ New Sample</a>
     </nav>
+    <div class="userbox" sec:authorize="isAuthenticated()">
+        <span sec:authentication="name">user</span>
+        <form th:action="@{/logout}" method="post" style="display:inline">
+            <button class="linkbtn" type="submit">Logout</button>
+        </form>
+    </div>
 </header>
 <div class="container">
     <div class="card">

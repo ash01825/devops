@@ -144,6 +144,7 @@ table.data th { color: var(--muted); text-transform: uppercase; font-size: 0.75r
   align-items: end;
 }
 @media (max-width: 800px) { .searchbar { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .searchbar { grid-template-columns: 1fr; } }
 .alert { border-radius: 8px; padding: 0.7rem 1rem; margin-bottom: 1rem; }
 .alert.success { background: var(--green-bg); color: var(--green); border: 1px solid #86efac; }
 .alert.error { background: var(--red-bg); color: var(--red); border: 1px solid #fca5a5; }
@@ -153,6 +154,6 @@ table.data th { color: var(--muted); text-transform: uppercase; font-size: 0.75r
 .detail dt { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; }
 .detail dd { margin: 0.15rem 0 0.8rem; font-size: 1.02rem; font-weight: 600; }
 .workflow { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
-.login-wrap { max-width: 420px; margin: 4rem auto; }
+.login-wrap { max-width: 420px; margin: 4rem auto; padding: 0 1rem; }
 .login-wrap .card { padding: 2rem; }
 .footer { text-align: center; color: var(--muted); font-size: 0.82rem; padding: 1.5rem; }

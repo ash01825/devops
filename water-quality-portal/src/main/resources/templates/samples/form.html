@@ -67,18 +67,22 @@
                 <div class="field">
                     <label for="temperature">Temperature (°C)</label>
                     <input type="number" step="0.1" min="-10" max="60" id="temperature" th:field="*{temperature}">
+                    <div class="err" th:if="${#fields.hasErrors('temperature')}" th:errors="*{temperature}"></div>
                 </div>
                 <div class="field">
                     <label for="dissolvedOxygen">Dissolved O₂ (mg/L)</label>
                     <input type="number" step="0.01" min="0" max="20" id="dissolvedOxygen" th:field="*{dissolvedOxygen}">
+                    <div class="err" th:if="${#fields.hasErrors('dissolvedOxygen')}" th:errors="*{dissolvedOxygen}"></div>
                 </div>
                 <div class="field">
                     <label for="turbidity">Turbidity (NTU)</label>
                     <input type="number" step="0.01" min="0" id="turbidity" th:field="*{turbidity}">
+                    <div class="err" th:if="${#fields.hasErrors('turbidity')}" th:errors="*{turbidity}"></div>
                 </div>
                 <div class="field">
                     <label for="conductivity">Conductivity (µS/cm)</label>
                     <input type="number" step="0.1" min="0" id="conductivity" th:field="*{conductivity}">
+                    <div class="err" th:if="${#fields.hasErrors('conductivity')}" th:errors="*{conductivity}"></div>
                 </div>
             </div>
             <div class="field">

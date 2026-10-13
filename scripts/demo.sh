@@ -27,8 +27,8 @@ echo "=== [2/5] Docker build (versioned tag) ==="
 docker build -f docker/Dockerfile -t "water-quality-portal:${APP_VERSION}" .
 docker tag "water-quality-portal:${APP_VERSION}" water-quality-portal:latest
 
-echo "=== [3/5] Compose up ==="
-docker compose -f docker/docker-compose.yml up -d --build
+echo "=== [3/5] Compose up (same version just built) ==="
+APP_VERSION="${APP_VERSION}" docker compose -f docker/docker-compose.yml up -d --build
 docker compose -f docker/docker-compose.yml ps
 
 echo "=== [4/5] Health check (waits up to ~2 min for Tomcat) ==="
@@ -49,7 +49,11 @@ else
   python3 scripts/health_check.py --base-url "$BASE_URL"
 fi
 
-echo "=== [5/5] Selenium suite (already ran inside mvn verify) ==="
+if [ "${SKIP_SELENIUM:-false}" = "true" ]; then
+  echo "=== [5/5] Selenium suite SKIPPED (SKIP_SELENIUM=true) ==="
+else
+  echo "=== [5/5] Selenium suite (already ran inside mvn verify) ==="
+fi
 cat <<'EOF'
 Selenium journeys (headless Chrome via WebDriverManager, no manual driver setup):
   cd water-quality-portal

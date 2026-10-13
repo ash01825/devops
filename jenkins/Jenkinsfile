@@ -12,6 +12,8 @@ pipeline {
                description: 'Target environment label (staging | prod). Names the fallback container and labels the run; the compose deployment uses project wq-portal.')
         booleanParam(name: 'SKIP_SELENIUM', defaultValue: false,
                      description: 'Skip the Selenium quality gate (e.g. headless runner unavailable).')
+        password(name: 'ADMIN_PASSWORD', defaultValue: '',
+                 description: 'Bootstrap admin password for FRESH prod databases (empty = no users created; required on first deploy).')
     }
 
     environment {
@@ -131,11 +133,15 @@ pipeline {
                     echo "Deploying version ${APP_VERSION} to environment: $ENV_NAME"
                     if docker compose version >/dev/null 2>&1; then
                         APP_VERSION="${APP_VERSION}" ENV_NAME="$ENV_NAME" \
+                          ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
                           docker compose -f docker/docker-compose.yml up -d
                     else
                         docker rm -f "wq-portal-app-$ENV_NAME" 2>/dev/null || true
                         docker run -d --name "wq-portal-app-$ENV_NAME" -p 8080:8080 \
                           -e SPRING_PROFILES_ACTIVE=prod \
+                          -e DB_URL=jdbc:postgresql://host.docker.internal:5432/waterquality \
+                          -e DB_USER=wquser -e DB_PASS=wqpass \
+                          -e ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
                           "water-quality-portal:${APP_VERSION}"
                     fi
                     for i in $(seq 1 24); do

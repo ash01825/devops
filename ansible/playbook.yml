@@ -23,6 +23,10 @@
     db_user: wquser
     db_password: wqpass
     app_context: water-quality-portal
+    db_name: waterquality
+    db_user: wquser
+    db_password: wqpass
+    admin_password: ""
     repo_root: "{{ playbook_dir }}/.."
     deploy_dir: /opt/wq-portal
     compose_project: wq-portal
@@ -71,12 +75,6 @@
         state: directory
         mode: "0755"
 
-    - name: Ensure local postgres data dir exists (repo-relative)
-      ansible.builtin.file:
-        path: "{{ repo_root }}/postgres_data"
-        state: directory
-        mode: "0755"
-
     # ---- 4. Ship compose file (template via copy with env) ----
     - name: Ensure deploy compose file is present
       ansible.builtin.copy:
@@ -101,8 +99,15 @@
       register: compose_up
       environment:
         APP_VERSION: "{{ app_version }}"
+        DB_USER: "{{ db_user }}"
+        DB_PASS: "{{ db_password }}"
+        ADMIN_PASSWORD: "{{ admin_password }}"
 
-    # ---- 6. Wait for port + health check ----
+    # ---- 6. Apply any notified restarts BEFORE health-gating ----
+    - name: Flush handlers so health checks hit the new containers
+      ansible.builtin.meta: flush_handlers
+
+    # ---- 7. Wait for port + health check ----
     - name: Wait for app port to open
       ansible.builtin.wait_for:
         host: "127.0.0.1"

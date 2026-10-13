@@ -62,7 +62,7 @@
                     <input type="date" id="to" name="to" th:value="${to}">
                 </div>
                 <div class="field">
-                    <label>&nbsp;</label>
+                    <label aria-hidden="true">&nbsp;</label>
                     <button type="submit" class="btn" id="searchBtn">Search</button>
                 </div>
             </div>
@@ -85,7 +85,9 @@
                 <td><a th:href="@{/samples/{id}(id=${s.id})}">View</a></td>
             </tr>
             <tr th:if="${#lists.isEmpty(samples)}">
-                <td colspan="6" id="noResults">No samples match your search.</td>
+                <td colspan="6" id="noResults">No samples match your search.
+                    <a th:href="@{/samples}">Clear filters</a> ·
+                    <a th:href="@{/samples/new}">+ New sample</a></td>
             </tr>
             </tbody>
         </table>

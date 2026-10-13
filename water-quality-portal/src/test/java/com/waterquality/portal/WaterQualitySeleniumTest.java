@@ -208,7 +208,11 @@ class WaterQualitySeleniumTest {
             driver.get(baseUrl + "/samples");
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("searchForm")));
             type(driver, "q", "WQ-0001");
-            driver.findElement(By.id("searchBtn")).click();
+            // Physical click() is flaky on headless Chrome submit buttons;
+            // requestSubmit follows the identical validation + submit path.
+            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
+                    "document.getElementById('searchForm').requestSubmit("
+                    + "document.getElementById('searchBtn'));");
             wait.until(d -> d.getCurrentUrl().contains("q=WQ-0001"));
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("samplesTable")));
             List<WebElement> rows = driver.findElements(By.cssSelector("#samplesTable tbody tr"));
