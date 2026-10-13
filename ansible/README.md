@@ -47,7 +47,7 @@ changed: [localhost]
 TASK [Health-check actuator endpoint (expect HTTP 200)] ****
 ok: [localhost]
 PLAY RECAP ****
-localhost: ok=12 changed=5 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
+localhost: ok=15 changed=1 unreachable=0 failed=0 skipped=1 rescued=0 ignored=0
 ```
 
 ## 3. Second run — idempotent (expect `changed=0`)
@@ -58,7 +58,7 @@ conda run -n os ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
 
 ```text
 PLAY RECAP ****
-localhost: ok=12 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
+localhost: ok=15 changed=0 unreachable=0 failed=0 skipped=1 rescued=0 ignored=0
 ```
 
 Re-running changes nothing: folders use `state: directory`, images use

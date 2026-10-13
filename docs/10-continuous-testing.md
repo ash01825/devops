@@ -41,3 +41,20 @@ Failsafe + surefire XML are published in the stage's `post.always`, so the
   `IllegalArgumentException("Unknown station: …")` for bad ids. Spring picks it up
   automatically via the conversion service.
 - **Green:** journey 2 passes — form submits, detail shows `DRAFT` + new sample ID.
+
+## Deliberate-defect drill (committed evidence)
+
+To prove the gate blocks deployment, a defect was deliberately introduced on a
+scratch checkout (`allowedRoles` returned `null` for `DRAFT → SUBMITTED`) and
+then reverted — the rubric's red → fix → green cycle:
+
+- **Red:** `docs/evidence/gate-fail/unit-red.log`
+  (`IllegalStateException: Illegal transition: DRAFT -> SUBMITTED`, BUILD FAILURE)
+  and `docs/evidence/gate-fail/selenium-red.log` with
+  `selenium-failure.png`/`.html` (Submit button never appears, journey times out).
+- **Fix:** one-line revert restoring `Set.of(Role.COLLECTOR, Role.ADMIN)`
+  (see `docs/evidence/gate-fail/README.md`).
+- **Green:** both tests re-run green; full suite (30 tests) green in
+  `docs/evidence/jenkins-pipeline-rehearsal.log`.
+- Related hardening commits on this branch: `fix: fail-closed security…`
+  (`0300075`-series — run `git log --oneline` for hashes).

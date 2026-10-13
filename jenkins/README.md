@@ -70,7 +70,7 @@ Trigger evidence: each auto build shows the commit under **Changes**, and the
 # Same commands the Jenkinsfile runs, in order:
 cd water-quality-portal && mvn -B clean package -DskipTests
 mvn -B test
-mvn -B verify -Dtest=SeleniumSuite -DfailIfNoTests=false || mvn -B verify
+mvn -B test -Dtest='WaterQualitySeleniumTest' -DfailIfNoTests=true
 cd .. && docker build -f docker/Dockerfile -t water-quality-portal:1.0.0 .
 docker compose -f docker/docker-compose.yml up -d
 curl -f http://localhost:8080/water-quality-portal/actuator/health
