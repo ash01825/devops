@@ -14,7 +14,7 @@
         <p style="color:#64748b">Sample lifecycle: DRAFT → SUBMITTED → UNDER_REVIEW → APPROVED | REJECTED.</p>
 
         <div th:if="${param.error}" class="alert error" role="alert" id="loginError">Invalid username or password.</div>
-        <div th:if="${param.logout}" class="alert info">You have been logged out.</div>
+        <div th:if="${param.logout}" class="alert info" role="alert">You have been logged out.</div>
 
         <form th:action="@{/login}" method="post" id="loginForm">
             <div class="field">

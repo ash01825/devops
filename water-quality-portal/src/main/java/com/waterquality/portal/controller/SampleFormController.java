@@ -1,6 +1,7 @@
 package com.waterquality.portal.controller;
 
 import com.waterquality.portal.domain.Sample;
+import com.waterquality.portal.domain.SampleStatus;
 import com.waterquality.portal.service.SampleService;
 import com.waterquality.portal.service.StationService;
 import jakarta.validation.Valid;
@@ -54,8 +55,15 @@ public class SampleFormController {
     }
 
     @GetMapping("/samples/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model) {
-        model.addAttribute("sample", sampleService.findById(id));
+    public String editForm(@PathVariable Long id, Model model, RedirectAttributes redirect) {
+        Sample sample = sampleService.findById(id);
+        if (sample.getStatus() != SampleStatus.DRAFT
+                && sample.getStatus() != SampleStatus.REJECTED) {
+            redirect.addFlashAttribute("error",
+                    "Only DRAFT or REJECTED samples can be edited.");
+            return "redirect:/samples/" + id;
+        }
+        model.addAttribute("sample", sample);
         model.addAttribute("stations", stationService.findAll());
         model.addAttribute("isEdit", true);
         return "samples/form";

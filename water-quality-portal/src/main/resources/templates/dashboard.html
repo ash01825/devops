@@ -26,7 +26,7 @@
 </header>
 
 <div class="container">
-    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+    <div th:if="${success}" class="alert success" role="alert" th:text="${success}"></div>
 
     <div class="card">
         <h2 id="summaryHeading">Summary — <span th:text="${totalCount}">0</span> samples</h2>

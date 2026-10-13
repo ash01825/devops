@@ -1,5 +1,6 @@
 package com.waterquality.portal;
 
+import com.waterquality.portal.repository.SampleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +22,9 @@ class WebSecurityTest {
 
     @Autowired
     MockMvc mvc;
+
+    @Autowired
+    SampleRepository samples;
 
     @Test
     void anonymousIsRedirectedToLogin() throws Exception {
@@ -74,6 +78,14 @@ class WebSecurityTest {
     @WithMockUser(username = "collector", roles = "COLLECTOR")
     void authenticatedUnknownSampleIdReturns404Page() throws Exception {
         mvc.perform(get("/samples/999999")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "collector", roles = "COLLECTOR")
+    void editFormForNonEditableSampleRedirects() throws Exception {
+        Long approvedId = samples.findBySampleId("WQ-0004").orElseThrow().getId();
+        mvc.perform(get("/samples/" + approvedId + "/edit"))
+                .andExpect(status().is3xxRedirection());
     }
 
     @Test

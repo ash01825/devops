@@ -116,6 +116,7 @@ Docker → Ansible).
 | GET | `/api/samples` | List + search as JSON (`search`, `status`, `station`) |
 | GET | `/api/samples/{id}` | View sample as JSON |
 | GET | `/api/dashboard/summary` | Dashboard counts as JSON |
+| GET | `/api/auth/login` | Login hint stub (form login lives at `GET /login`) |
 | GET | `/actuator/health` | Liveness probe (public) |
 
 ---

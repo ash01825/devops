@@ -47,6 +47,10 @@ services:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      # Bootstrap admin password for fresh prod databases (ProdBootstrap creates
+      # user `admin` from this on first start; empty = no users, by design).
+      # Pass at deploy time: ADMIN_PASSWORD=secret docker compose ... up -d
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/waterquality
       SPRING_DATASOURCE_USERNAME: wquser
       SPRING_DATASOURCE_PASSWORD: wqpass

@@ -11,7 +11,7 @@
 - Station management (`ADMIN` only, URL + method-level guards).
 - Pipeline: Jenkinsfile (build → unit → Selenium gate → archive →
   versioned Docker image → compose deploy with health gate).
-- Quality gates: 30 tests (JUnit + headless-Chrome Selenium); failures abort
+- Quality gates: 31 tests (JUnit + headless-Chrome Selenium); failures abort
   before packaging/deploy stages.
 - Provisioning: Ansible playbook (idempotent), rollback playbook, health checks.
 

@@ -16,5 +16,5 @@ returned `null` for `DRAFT → SUBMITTED`, so no collector could submit anything
 
 - Fix: restore `Set.of(Role.COLLECTOR, Role.ADMIN)` for `DRAFT → SUBMITTED`
   (one-line revert; the hardening around it is committed on this branch).
-- Green proof: `docs/evidence/jenkins-pipeline-rehearsal.log` (30 tests pass)
+- Green proof: `docs/evidence/jenkins-pipeline-rehearsal.log` (31 tests pass)
   and the rerun below was committed as part of the normal suite.

@@ -31,10 +31,10 @@ Selenium screenshots dir `target/selenium-failures/` only created on failure.
 3. **Samples → New Sample**: ID `WQ-0101`, station `ST-01`, collectedAt yesterday,
    collector name, pH `7.2` → Save. Expected: detail page, `#statusBadge` = `DRAFT`,
    flash `Sample WQ-0101 created.`
-4. Click the **SUBMITTED** button (`btn-SUBMITTED`). Expected: badge `SUBMITTED` + history row.
-5. Logout; login `analyst/analyst123` → open WQ-0101 → click **UNDER_REVIEW**.
+4. Click **Submit for Review** (button id `btn-SUBMITTED`). Expected: badge `SUBMITTED` + history row.
+5. Logout; login `analyst/analyst123` → open WQ-0101 → click **Start Review** (`btn-UNDER_REVIEW`).
    Expected: `UNDER_REVIEW`.
-6. Logout; login `reviewer/reviewer123` → open WQ-0101 → click **APPROVED**.
+6. Logout; login `reviewer/reviewer123` → open WQ-0101 → click **Approve** (`btn-APPROVED`).
    Expected: `APPROVED`, history shows all transitions with who/when.
 
 ## 3. Dashboard counts
@@ -49,10 +49,16 @@ non-empty; counts shift after step 2 (one more `DRAFT`, then moved statuses).
 cd /Users/ash/Desktop/devops
 docker build -f docker/Dockerfile -t water-quality-portal:1.0.0 .
 docker images | grep water-quality-portal   # expect 1.0.0 + latest
-docker compose -f docker/docker-compose.yml up -d --build
+ADMIN_PASSWORD='demo-admin-pass' docker compose -f docker/docker-compose.yml up -d
 conda run -n os python scripts/health_check.py   # expect HEALTHY
 curl -f http://localhost:8080/water-quality-portal/actuator/health
 ```
+
+> The compose stack runs the `prod` profile, which never seeds demo data:
+> the first `admin` user is bootstrapped from `ADMIN_PASSWORD` (see
+> `config/ProdBootstrap.java`). Log in as `admin` / that password, create
+> stations under Stations, then create samples. Dev runs
+> (`mvn spring-boot:run`) seed the four demo accounts instead.
 
 ## 5. Ansible syntax-check + playbook summary
 

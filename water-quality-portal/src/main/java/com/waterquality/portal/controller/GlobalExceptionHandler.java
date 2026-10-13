@@ -6,10 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Map;
 
@@ -54,12 +52,9 @@ public class GlobalExceptionHandler {
                 "One of the request parameters is invalid.", req);
     }
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ModelAndView noHandler(NoHandlerFoundException e, HttpServletRequest req) {
-        return errorView(HttpStatus.NOT_FOUND, "Page not found",
-                "No page exists at " + req.getRequestURI() + ".", req);
-    }
+    // NOTE: unknown *routes* (e.g. /nope) fall through to Boot's default /error
+    // handling, which renders the same error.html with Boot's own model — only
+    // unknown *IDs* that reach a controller are mapped above.
 
     private ModelAndView errorView(HttpStatus status, String title,
                                    String message, HttpServletRequest req) {

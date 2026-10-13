@@ -62,9 +62,9 @@ Handled in-pipeline (no UI config needed):
 
 ## 5. Trigger evidence (capture checklist for the report)
 
-No Jenkins controller runs in this repo snapshot, so capture these on the lab
-Jenkins and save them under `docs/screenshots/` with the names below. Until
-then, the same stages are proven locally in
+No Jenkins controller runs in this repo snapshot (pending-lab-machine), so
+capture these on the lab Jenkins and save them under `docs/screenshots/`
+with the names below. Until then, the same stages are proven locally in
 `docs/evidence/jenkins-pipeline-rehearsal.log`, and the gate-fail mechanism in
 `docs/evidence/gate-fail/`:
 
