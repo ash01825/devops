@@ -28,6 +28,9 @@ replay_pid*
 # --- Logs ---
 *.log
 logs/
+# ...except committed DevOps evidence (referenced by docs/ and the report)
+!docs/evidence/*.log
+!docs/evidence/**/*.log
 
 # --- Environment / secrets (never commit) ---
 .env

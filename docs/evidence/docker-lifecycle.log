@@ -1,0 +1,39 @@
+=== docker images ===
+REPOSITORY             TAG       IMAGE ID       CREATED         SIZE
+water-quality-portal   1.0.0     7f7704a51ddc   2 minutes ago   904MB
+water-quality-portal   latest    7f7704a51ddc   2 minutes ago   904MB
+
+=== ps ===
+NAME            IMAGE                        COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+wq-portal-app   water-quality-portal:1.0.0   "catalina.sh run"        app       59 seconds ago   Up 20 seconds (healthy)   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+wq-portal-db    postgres:16-alpine           "docker-entrypoint.s…"   db        26 seconds ago   Up 26 seconds (healthy)   0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp
+
+=== stop app ===
+wq-portal-app
+
+=== start app ===
+wq-portal-app
+
+=== health after restart ===
+{"status":"UP"}
+
+=== inspect ===
+image=water-quality-portal:1.0.0 status=running
+
+=== remove demo (app only, recreated after) ===
+wq-portal-app
+ Container wq-portal-db  Running
+ Container wq-portal-app  Creating
+ Container wq-portal-app  Created
+ Container wq-portal-db  Waiting
+ Container wq-portal-db  Healthy
+ Container wq-portal-app  Starting
+ Container wq-portal-app  Started
+{"status":"UP"}
+
+=== addendum 2026-10-13: rebuilt with current code, fresh prod deploy ===
+water-quality-portal:1.0.0 242ef60c2b5a 904MB
+water-quality-portal:latest 242ef60c2b5a 904MB
+wq-portal-app water-quality-portal:1.0.0 Up 57 seconds (healthy)
+wq-portal-db postgres:16-alpine Up 57 seconds (healthy)
+{"status":"UP"}

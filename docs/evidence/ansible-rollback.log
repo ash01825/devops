@@ -1,0 +1,41 @@
+
+PLAY [Roll back portal app to previous stable image] ***************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Validate prev_version is set] ********************************************
+ok: [localhost] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [Show rollback target] ****************************************************
+ok: [localhost] => {
+    "msg": "Rolling back app to water-quality-portal:1.0.0"
+}
+
+TASK [Ensure rollback image is present locally] ********************************
+ok: [localhost]
+
+TASK [Stop current app container] **********************************************
+changed: [localhost]
+
+TASK [Start previous stable app container] *************************************
+changed: [localhost]
+
+TASK [Wait for app port to open after rollback] ********************************
+ok: [localhost]
+
+TASK [Health-check actuator endpoint after rollback (expect 200)] **************
+ok: [localhost]
+
+TASK [Report rollback result] **************************************************
+ok: [localhost] => {
+    "msg": "Rollback to 1.0.0 healthy: HTTP 200"
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=9    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+

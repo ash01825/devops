@@ -1,0 +1,16 @@
+=== fresh-volume prod bootstrap ===
+2026-10-13T05:21:23.279Z  INFO 1 --- [water-quality-portal] [           main] c.w.portal.config.ProdBootstrap          : Bootstrap admin user 'admin' created. Change its password after first login.
+--- login with bootstrapped admin/demo-admin-pass ---
+Location: /water-quality-portal/dashboard
+--- old default password must FAIL ---
+python: can't open file '/private/tmp/scripts/health_check.py': [Errno 2] No such file or directory
+
+ERROR conda.cli.main_run:execute(125): `conda run python scripts/health_check.py` failed. (See above for error)
+[health] GET http://localhost:8080/water-quality-portal/actuator/health -> 200
+[health] OK: status UP
+[auth]   GET http://localhost:8080/water-quality-portal/samples (no redirect) -> 302
+[auth]   OK: anonymous /samples redirects to login (gate working)
+[page]   GET http://localhost:8080/water-quality-portal/login -> 200
+[page]   OK: login form reachable
+HEALTHY
+

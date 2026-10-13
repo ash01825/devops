@@ -1,0 +1,71 @@
+[WARNING]: Docker compose: unknown None: volume "wq-portal-pgdata" already
+exists but was created for project "docker" (expected "wq-portal"). Use
+`external: true` to use an existing volume
+
+
+PLAY [Deploy Water Quality Sampling Portal stack] ******************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Ensure base tooling is present (macOS/Homebrew note)] ********************
+ok: [localhost] => {
+    "msg": "Requires curl + docker. Install with: brew install curl docker"
+}
+
+TASK [Check curl is installed] *************************************************
+ok: [localhost]
+
+TASK [Check docker is installed] ***********************************************
+ok: [localhost]
+
+TASK [Assert required CLIs exist] **********************************************
+ok: [localhost] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [Record deploy identity (local run uses current user, no new users)] ******
+ok: [localhost]
+
+TASK [Show deploy user] ********************************************************
+ok: [localhost] => {
+    "msg": "Deploying as local user ash (no dedicated service user created for local staging)."
+}
+
+TASK [Ensure deploy directory exists] ******************************************
+ok: [localhost]
+
+TASK [Ensure local postgres data dir exists (repo-relative)] *******************
+ok: [localhost]
+
+TASK [Ensure deploy compose file is present] ***********************************
+ok: [localhost]
+
+TASK [Pull db image (idempotent)] **********************************************
+ok: [localhost]
+
+TASK [Start portal stack with compose v2] **************************************
+changed: [localhost]
+
+TASK [Fallback — start stack via shell if compose module unavailable] **********
+skipping: [localhost]
+
+TASK [Wait for app port to open] ***********************************************
+ok: [localhost]
+
+TASK [Health-check actuator endpoint (expect HTTP 200)] ************************
+ok: [localhost]
+
+TASK [Show health response] ****************************************************
+ok: [localhost] => {
+    "failed_when_result": false,
+    "health.json": {
+        "status": "UP"
+    }
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=15   changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+
+

@@ -1,0 +1,5 @@
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 2.952 s <<< FAILURE! -- in com.waterquality.portal.SampleServiceTest
+java.lang.IllegalStateException: Illegal transition: DRAFT -> SUBMITTED
+[ERROR]   SampleServiceTest.fullWorkflowSucceedsWithRightRoles:56 » IllegalState Illegal transition: DRAFT -> SUBMITTED
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+[INFO] BUILD FAILURE
