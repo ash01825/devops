@@ -29,14 +29,17 @@ stage means Archive/Docker/Deploy never run.
 
 ## Deploy + health check
 
-The Deploy stage passes `ENV_NAME`/`APP_VERSION` into compose, waits ~5 s, then
-fails the build unless `GET /water-quality-portal/actuator/health` returns 200.
+The Deploy stage passes `ENV_NAME`/`APP_VERSION` into compose, then polls
+`GET /water-quality-portal/actuator/health` for up to ~2 minutes and fails the
+build unless the fresh container reports UP.
 `post` block: `always` re-archives WAR + surefire XML; `failure` prints
 "deployment was NOT performed"; `success` prints the deployed version/env.
 
 ## Evidence checklist
 
-- `docs/screenshots/jenkins-console.png` — green stages incl. Selenium gate.
-- `docs/screenshots/jenkins-artifacts.png` — archived `.war`.
-- `docs/screenshots/jenkins-gate-fail.png` — red run where Deploy is skipped.
+- `docs/evidence/jenkins-pipeline-rehearsal.log` — same stages run locally, all green.
+- App screenshots: `docs/screenshots/` (dashboard, samples, detail, login).
+- Gate-fail run: `docs/evidence/gate-fail/` — red build where downstream stages stop.
 - `docker images | grep water-quality-portal` shows the `${APP_VERSION}` tag.
+- On the lab Jenkins, additionally capture Console Output, Test Result, and
+  Build Artifacts pages (checklist in `jenkins/job-config.md` §5).

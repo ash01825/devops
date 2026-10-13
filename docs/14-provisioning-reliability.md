@@ -6,7 +6,7 @@ Re-running the deploy playbook changes nothing:
 
 ```bash
 conda run -n os ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
-# PLAY RECAP: localhost: ok=12 changed=0 unreachable=0 failed=0
+# PLAY RECAP: localhost: ok=15 changed=0 unreachable=0 failed=0 skipped=1 (idempotency rerun)
 ```
 
 Why it holds: folders use `file: state=directory`, db pull is idempotent,
