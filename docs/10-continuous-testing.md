@@ -56,5 +56,7 @@ then reverted — the rubric's red → fix → green cycle:
   (see `docs/evidence/gate-fail/README.md`).
 - **Green:** both tests re-run green; full suite (30 tests) green in
   `docs/evidence/jenkins-pipeline-rehearsal.log`.
-- Related hardening commits on this branch: `fix: fail-closed security…`
-  (`0300075`-series — run `git log --oneline` for hashes).
+- Related hardening commits on this branch (`feature/viva-polish`):
+  `0300075` (fail-closed security, error pages, prod-safe seeds),
+  `7205839` (role-gated workflow UI), `ca67769` (edit-guard/CSRF/404 tests),
+  `64c6985` (Jenkinsfile/compose/rollback/gate fixes).
