@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/api/**"))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();

@@ -31,7 +31,8 @@ public class SampleWorkflowController {
         String username = auth.getName();
         Role role = userRepository.findByUsername(username)
                 .map(u -> u.getRole())
-                .orElse(Role.COLLECTOR);
+                .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException(
+                        "Unknown user: " + username));
         try {
             sampleService.transition(id, toStatus, comment, username, role);
             redirect.addFlashAttribute("success",

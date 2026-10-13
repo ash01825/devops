@@ -3,6 +3,7 @@ package com.waterquality.portal.controller;
 import com.waterquality.portal.domain.Station;
 import com.waterquality.portal.service.StationService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/stations")
+@PreAuthorize("hasRole('ADMIN')")
 public class StationController {
 
     private final StationService stationService;

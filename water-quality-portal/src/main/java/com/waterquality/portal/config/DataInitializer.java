@@ -13,6 +13,7 @@ import com.waterquality.portal.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
@@ -21,8 +22,10 @@ import java.time.LocalDateTime;
 /**
  * Seeds demo users, stations and samples on first start.
  * Idempotent: does nothing when users already exist.
+ * Never runs under the {@code prod} profile (no demo credentials in production).
  */
 @Configuration
+@Profile("!prod")
 public class DataInitializer {
 
     @Bean
@@ -32,18 +35,20 @@ public class DataInitializer {
                                StatusHistoryRepository historyRepository,
                                PasswordEncoder passwordEncoder) {
         return args -> {
-            if (userRepository.count() > 0) {
-                return;
+            if (userRepository.count() == 0) {
+                userRepository.save(createUser("admin", "admin123", "System Admin",
+                        "admin@waterquality.local", Role.ADMIN, passwordEncoder));
+                userRepository.save(createUser("collector", "collector123", "Field Collector",
+                        "collector@waterquality.local", Role.COLLECTOR, passwordEncoder));
+                userRepository.save(createUser("analyst", "analyst123", "Lab Analyst",
+                        "analyst@waterquality.local", Role.ANALYST, passwordEncoder));
+                userRepository.save(createUser("reviewer", "reviewer123", "Quality Reviewer",
+                        "reviewer@waterquality.local", Role.REVIEWER, passwordEncoder));
             }
 
-            userRepository.save(createUser("admin", "admin123", "System Admin",
-                    "admin@waterquality.local", Role.ADMIN, passwordEncoder));
-            userRepository.save(createUser("collector", "collector123", "Field Collector",
-                    "collector@waterquality.local", Role.COLLECTOR, passwordEncoder));
-            userRepository.save(createUser("analyst", "analyst123", "Lab Analyst",
-                    "analyst@waterquality.local", Role.ANALYST, passwordEncoder));
-            userRepository.save(createUser("reviewer", "reviewer123", "Quality Reviewer",
-                    "reviewer@waterquality.local", Role.REVIEWER, passwordEncoder));
+            if (stationRepository.count() > 0 || sampleRepository.count() > 0) {
+                return;
+            }
 
             Station s1 = station("ST-01", "River Main Intake", "Main River", 12.3456, 77.6543);
             Station s2 = station("ST-02", "North Reservoir", "North Lake", 12.9876, 77.1234);

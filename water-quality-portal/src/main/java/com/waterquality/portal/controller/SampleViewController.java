@@ -63,6 +63,17 @@ public class SampleViewController {
         model.addAttribute("history", sampleService.historyFor(id));
         model.addAttribute("nextStatuses", SampleService.nextStatuses(sample.getStatus()));
         model.addAttribute("currentRole", currentRole(auth));
+        String role = currentRole(auth);
+        java.util.Set<com.waterquality.portal.domain.SampleStatus> allowed = new java.util.LinkedHashSet<>();
+        for (com.waterquality.portal.domain.SampleStatus next
+                : SampleService.nextStatuses(sample.getStatus())) {
+            if (!role.isEmpty() && canTransition(sample.getStatus(), next, role)) {
+                allowed.add(next);
+            }
+        }
+        model.addAttribute("allowedTransitions", allowed);
+        model.addAttribute("canEdit", sample.getStatus() == com.waterquality.portal.domain.SampleStatus.DRAFT
+                || sample.getStatus() == com.waterquality.portal.domain.SampleStatus.REJECTED);
         return "samples/view";
     }
 
@@ -84,5 +95,16 @@ public class SampleViewController {
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    /** Human-readable workflow button labels (templates show these, not enum names). */
+    public static String actionLabel(SampleStatus to) {
+        return switch (to) {
+            case SUBMITTED -> "Submit for Review";
+            case UNDER_REVIEW -> "Start Review";
+            case APPROVED -> "Approve";
+            case REJECTED -> "Reject";
+            case DRAFT -> "Rework as Draft";
+        };
     }
 }
