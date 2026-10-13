@@ -48,8 +48,43 @@ class WebSecurityTest {
 
     @Test
     @WithMockUser(username = "collector", roles = "COLLECTOR")
+    void nonAdminCannotCreateStations() throws Exception {
+        mvc.perform(post("/stations").with(csrf())
+                        .param("code", "ST-UT-98")
+                        .param("name", "Nope Station"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void postWithoutCsrfIsRejected() throws Exception {
+        mvc.perform(post("/stations")
+                        .param("code", "ST-UT-97")
+                        .param("name", "No CSRF Station"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void unknownSampleIdReturns404Page() throws Exception {
+        // Anonymous request is redirected to login first (security filter runs before MVC)
+        mvc.perform(get("/samples/999999")).andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    @WithMockUser(username = "collector", roles = "COLLECTOR")
+    void authenticatedUnknownSampleIdReturns404Page() throws Exception {
+        mvc.perform(get("/samples/999999")).andExpect(status().isNotFound());
+    }
+
+    @Test
     void loginPageElementsExist() throws Exception {
         mvc.perform(get("/login")).andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "collector", roles = "COLLECTOR")
+    void authenticatedUserIsRedirectedAwayFromLogin() throws Exception {
+        mvc.perform(get("/login")).andExpect(status().is3xxRedirection());
     }
 
     @Test

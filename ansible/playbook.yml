@@ -4,7 +4,13 @@
 # Usage:
 #   ansible-playbook -i ansible/inventory.ini ansible/playbook.yml
 #   ansible-playbook -i ansible/inventory.ini ansible/playbook.yml -e app_version=1.0.1
-# Requires collections: ansible/requirements.yml (community.docker, ansible.posix)
+# Requires collections: ansible/requirements.yml (community.docker).
+# Prerequisites: image water-quality-portal:<app_version> must already exist
+# in the local daemon (built by the Docker Build stage or `docker build`);
+# compose is started with pull: missing and never rebuilt here.
+# If /opt is not writable, override: -e deploy_dir=$HOME/wq-portal-deploy
+# Python: use the conda `os` env interpreter (has requests/docker libs):
+#   -e ansible_python_interpreter=$(conda run -n os which python)
 # ============================================================
 
 - name: Deploy Water Quality Sampling Portal stack
@@ -95,12 +101,6 @@
       register: compose_up
       environment:
         APP_VERSION: "{{ app_version }}"
-
-    - name: Fallback — start stack via shell if compose module unavailable
-      ansible.builtin.shell:
-        cmd: docker compose -p {{ compose_project }} -f {{ deploy_dir }}/docker-compose.yml up -d
-        creates: /tmp/.wq-portal-compose-up
-      when: false  # kept as documented fallback; module above is the primary path
 
     # ---- 6. Wait for port + health check ----
     - name: Wait for app port to open

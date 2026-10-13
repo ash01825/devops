@@ -60,18 +60,25 @@ Handled in-pipeline (no UI config needed):
 - Verify per build: **Build page → Build Artifacts** shows
   `water-quality-portal/target/water-quality-portal.war`.
 
-## 5. Trigger evidence (what to screenshot for the report)
+## 5. Trigger evidence (capture checklist for the report)
+
+No Jenkins controller runs in this repo snapshot, so capture these on the lab
+Jenkins and save them under `docs/screenshots/` with the names below. Until
+then, the same stages are proven locally in
+`docs/evidence/jenkins-pipeline-rehearsal.log`, and the gate-fail mechanism in
+`docs/evidence/gate-fail/`:
 
 - [ ] Job config page showing **Pipeline script from SCM** + Script Path
-      `jenkins/Jenkinsfile`. → placeholder: `docs/screenshots/jenkins-job-config.png`
-- [ ] **Poll SCM** schedule `H/2 * * * *`. → placeholder: `docs/screenshots/jenkins-trigger.png`
+      `jenkins/Jenkinsfile`. → `docs/screenshots/jenkins-job-config.png`
+- [ ] **Poll SCM** schedule `H/2 * * * *`. → `docs/screenshots/jenkins-trigger.png`
 - [ ] Build **Console Output** showing stages incl. `Selenium Quality Gate`.
-      → placeholder: `docs/screenshots/jenkins-console.png`
+      → `docs/screenshots/jenkins-console.png`
 - [ ] Build **Test Result** page (JUnit trend, failures if any).
-      → placeholder: `docs/screenshots/jenkins-tests.png`
-- [ ] **Build Artifacts** listing the `.war`. → placeholder: `docs/screenshots/jenkins-artifacts.png`
+      → `docs/screenshots/jenkins-tests.png`
+- [ ] **Build Artifacts** listing the `.war`. → `docs/screenshots/jenkins-artifacts.png`
 - [ ] Failed-test run proving **Deploy is skipped** (red build, no Deploy stage
-      in console). → placeholder: `docs/screenshots/jenkins-gate-fail.png`
+      in console). → `docs/screenshots/jenkins-gate-fail.png`
+      (local equivalent already committed: `docs/evidence/gate-fail/`).
 
 ## 6. Quality-gate behaviour
 

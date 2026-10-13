@@ -10,6 +10,9 @@ java -version       # must show 21 (Temurin)
 
 Demo logins: `admin/admin123`, `collector/collector123`, `analyst/analyst123`,
 `reviewer/reviewer123`. App: `http://localhost:8080/water-quality-portal`.
+Reference screenshots of every screen: `docs/screenshots/` (`app-login.png`,
+`app-dashboard.png`, `app-samples.png`, `app-sample-new.png`,
+`app-sample-detail.png`, `app-stations.png`).
 
 ## 1. Build + tests all green
 

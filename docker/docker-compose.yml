@@ -3,7 +3,13 @@
 # Usage: docker compose -f docker/docker-compose.yml up -d --build
 # App:  http://localhost:8080/water-quality-portal/
 # Docs: see docker/README.md
+#
+# Project name is pinned so manual runs and Ansible (project wq-portal)
+# share networks/volumes instead of colliding. Image tag comes from
+# APP_VERSION (Jenkins/Ansible) and defaults to 1.0.0.
 # ============================================================
+
+name: wq-portal
 
 services:
   db:
@@ -31,7 +37,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    image: water-quality-portal:1.0.0
+    image: water-quality-portal:${APP_VERSION:-1.0.0}
     container_name: wq-portal-app
     restart: unless-stopped
     ports:

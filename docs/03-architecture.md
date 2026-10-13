@@ -103,13 +103,20 @@ Docker → Ansible).
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| POST | `/api/auth/login` | Authenticate |
-| GET | `/api/samples` | List + search (`search`, `status`, `station`, `page`) |
-| POST | `/api/samples` | Create sample |
-| GET | `/api/samples/{id}` | View sample detail |
-| PUT | `/api/samples/{id}` | Update sample |
-| POST | `/api/samples/{id}/status` | Workflow transition |
-| GET | `/api/dashboard/summary` | Summary dashboard |
+| GET | `/login` | Login form (Spring Security form login) |
+| GET | `/dashboard` | Summary dashboard page |
+| GET | `/samples` | List + search (`q`, `status`, `stationId`, `from`, `to`) |
+| GET | `/samples/new` | New-sample form |
+| POST | `/samples` | Create sample (starts in `DRAFT`) |
+| GET | `/samples/{id}` | View sample detail + history + workflow actions |
+| GET | `/samples/{id}/edit` | Edit form (`DRAFT`/`REJECTED` only) |
+| POST | `/samples/{id}` | Update sample |
+| POST | `/samples/{id}/status` | Workflow transition (`toStatus` + `comment`) |
+| GET/POST | `/stations`, `/stations/new` | Station management (`ADMIN` only) |
+| GET | `/api/samples` | List + search as JSON (`search`, `status`, `station`) |
+| GET | `/api/samples/{id}` | View sample as JSON |
+| GET | `/api/dashboard/summary` | Dashboard counts as JSON |
+| GET | `/actuator/health` | Liveness probe (public) |
 
 ---
 

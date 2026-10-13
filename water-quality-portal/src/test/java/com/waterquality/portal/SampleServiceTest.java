@@ -100,4 +100,43 @@ class SampleServiceTest {
         long sum = counts.values().stream().mapToLong(Long::longValue).sum();
         assertEquals(samples.totalCount(), sum);
     }
+
+    @Test
+    void onlyDraftOrRejectedSamplesAreEditable() {
+        Sample s = samples.create(newSample("WQ-T-030"), "collector");
+        // DRAFT is editable
+        s.setNotes("edited in draft");
+        assertDoesNotThrow(() -> samples.update(s.getId(), s));
+
+        samples.transition(s.getId(), SampleStatus.SUBMITTED, "s", "collector", Role.COLLECTOR);
+        Sample frozen = samples.findById(s.getId());
+        frozen.setNotes("should fail");
+        assertThrows(IllegalStateException.class, () -> samples.update(s.getId(), frozen));
+
+        samples.transition(s.getId(), SampleStatus.UNDER_REVIEW, "t", "reviewer", Role.REVIEWER);
+        samples.transition(s.getId(), SampleStatus.REJECTED, "bad sample", "reviewer", Role.REVIEWER);
+        // REJECTED is editable again (rework loop)
+        Sample rework = samples.findById(s.getId());
+        rework.setNotes("fixed, ready to resubmit");
+        assertDoesNotThrow(() -> samples.update(s.getId(), rework));
+        // ... and can go back to DRAFT
+        samples.transition(s.getId(), SampleStatus.DRAFT, "rework", "collector", Role.COLLECTOR);
+        assertEquals(SampleStatus.DRAFT, samples.findById(s.getId()).getStatus());
+    }
+
+    @Test
+    void dateRangeSearchNarrowsResults() {
+        samples.create(newSample("WQ-T-040"), "collector");
+        java.time.LocalDate today = java.time.LocalDate.now();
+        assertFalse(samples.search("WQ-T-040", null, null,
+                today.minusDays(30), today.plusDays(1)).isEmpty());
+        assertTrue(samples.search("WQ-T-040", null, null,
+                today.minusDays(30), today.minusDays(10)).isEmpty());
+    }
+
+    @Test
+    void blankSampleIdIsRejected() {
+        Sample s = newSample("  ");
+        assertThrows(IllegalArgumentException.class, () -> samples.create(s, "collector"));
+    }
 }

@@ -1,10 +1,12 @@
 # ============================================================
 # Water Quality Sampling Portal — rollback playbook
-# Rolls the app container back to a previous stable image tag.
+# Rolls the app back to a previous stable image tag THROUGH compose, so the
+# compose state (image tag, env, network) always matches what is running.
 # Usage:
 #   ansible-playbook -i ansible/inventory.ini ansible/rollback.yml \
 #     -e "prev_version=1.0.0"
 # Health-gates the rollback: fails if the old version is not healthy.
+# The image must exist locally (locally built releases, no registry push).
 # ============================================================
 
 - name: Roll back portal app to previous stable image
@@ -30,35 +32,23 @@
         msg: "Rolling back app to water-quality-portal:{{ prev_version }}"
       changed_when: false
 
-    - name: Ensure rollback image is present locally
-      community.docker.docker_image:
+    - name: Verify rollback image exists locally (no blind pull)
+      community.docker.docker_image_info:
         name: "water-quality-portal:{{ prev_version }}"
-        source: pull
-      failed_when: false
       register: prev_image
 
-    - name: Stop current app container
-      community.docker.docker_container:
-        name: wq-portal-app
-        state: stopped
-      failed_when: false
+    - name: Fail with guidance when the image is missing
+      ansible.builtin.fail:
+        msg: "Image water-quality-portal:{{ prev_version }} not in local daemon. Build it first (docker build -f docker/Dockerfile -t water-quality-portal:{{ prev_version }} .) or pick an existing tag (docker images water-quality-portal)."
+      when: prev_image.images | length == 0
 
-    - name: Start previous stable app container
-      community.docker.docker_container:
-        name: wq-portal-app
-        image: "water-quality-portal:{{ prev_version }}"
-        state: started
-        restart_policy: unless-stopped
-        ports:
-          - "{{ app_port }}:8080"
-        env:
-          SPRING_PROFILES_ACTIVE: prod
-          SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/waterquality
-          SPRING_DATASOURCE_USERNAME: wquser
-          SPRING_DATASOURCE_PASSWORD: wqpass
-        networks:
-          - name: "{{ compose_project }}_default"
-      register: rollback_container
+    - name: Switch compose stack to the previous image tag
+      ansible.builtin.command:
+        cmd: docker compose -p {{ compose_project }} -f {{ deploy_dir }}/docker-compose.yml up -d
+      environment:
+        APP_VERSION: "{{ prev_version }}"
+      register: compose_switch
+      changed_when: "'Started' in compose_switch.stdout or 'Recreated' in compose_switch.stdout or 'Creating' in compose_switch.stdout"
 
     - name: Wait for app port to open after rollback
       ansible.builtin.wait_for:

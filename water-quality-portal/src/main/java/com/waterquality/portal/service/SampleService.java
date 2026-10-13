@@ -58,6 +58,9 @@ public class SampleService {
     }
 
     public Sample create(Sample sample, String username) {
+        if (sample.getSampleId() == null || sample.getSampleId().isBlank()) {
+            throw new IllegalArgumentException("Sample ID is required");
+        }
         if (sample.getStatus() == null) {
             sample.setStatus(SampleStatus.DRAFT);
         }
@@ -71,8 +74,11 @@ public class SampleService {
 
     public Sample update(Long id, Sample form) {
         Sample existing = findById(id);
-        if (existing.getStatus() == SampleStatus.APPROVED) {
-            throw new IllegalStateException("Approved samples cannot be edited");
+        if (existing.getStatus() != SampleStatus.DRAFT
+                && existing.getStatus() != SampleStatus.REJECTED) {
+            throw new IllegalStateException(
+                    "Only DRAFT or REJECTED samples can be edited (current: "
+                    + existing.getStatus() + ")");
         }
         existing.setStation(form.getStation());
         existing.setCollectedAt(form.getCollectedAt());

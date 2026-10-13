@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sample Detail</title>
+    <title>Water Quality Portal — Sample Detail</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230e7490' d='M12 2C12 2 5 10 5 15a7 7 0 0 0 14 0C19 10 12 2 12 2z'/%3E%3C/svg%3E">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 <header class="topbar">
-    <div class="brand">💧 Water Quality Portal</div>
+    <div class="brand">💧 Water Quality Portal <small>· sample detail</small></div>
     <nav class="nav">
         <a th:href="@{/dashboard}">Dashboard</a>
         <a th:href="@{/samples}">Samples</a>
+        <a th:href="@{/samples/new}">+ New Sample</a>
         <a th:href="@{/stations}" sec:authorize="hasRole('ADMIN')">Stations</a>
     </nav>
     <div class="userbox">
@@ -24,15 +26,15 @@
 </header>
 
 <div class="container">
-    <div th:if="${success}" class="alert success" th:text="${success}"></div>
-    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert error" role="alert" th:text="${error}"></div>
 
     <div class="card">
         <h2><span th:text="${sample.sampleId}">WQ-0001</span>
             <span class="badge" id="statusBadge" th:classappend="${sample.status}" th:text="${sample.status}">DRAFT</span>
         </h2>
         <p><a th:href="@{/samples}">← Back to list</a> ·
-           <a th:href="@{/samples/{id}/edit(id=${sample.id})}" id="editLink">Edit measurements</a></p>
+           <a th:if="${canEdit}" th:href="@{/samples/{id}/edit(id=${sample.id})}" id="editLink">Edit measurements</a></p>
 
         <dl class="detail">
             <div><dt>Station</dt><dd th:text="${sample.station.code + ' — ' + sample.station.name}">ST-01</dd></div>
@@ -49,20 +51,22 @@
 
     <div class="card" th:if="${!#sets.isEmpty(nextStatuses)}">
         <h2>Workflow actions</h2>
-        <p style="color:#64748b">Only actions permitted for your role will succeed — others are rejected server-side.</p>
-        <div class="workflow">
-            <form th:each="next : ${nextStatuses}" th:action="@{/samples/{id}/status(id=${sample.id})}"
+        <p style="color:#64748b">Only the actions permitted for your role are shown.</p>
+        <div class="workflow" th:with="vc=${T(com.waterquality.portal.controller.SampleViewController)}">
+            <form th:each="next : ${allowedTransitions}" th:action="@{/samples/{id}/status(id=${sample.id})}"
                   method="post" style="display:inline-flex;gap:0.4rem;align-items:center">
                 <input type="hidden" name="toStatus" th:value="${next}">
+                <label class="sr-only" th:for="${'comment-' + next}">Comment</label>
                 <input type="text" name="comment" th:id="${'comment-' + next}"
                        placeholder="Comment (required to reject)" style="border:1px solid #e2e8f0;border-radius:8px;padding:0.45rem 0.6rem">
-                <button type="submit" class="btn small" th:id="${'btn-' + next}" th:text="${next}">SUBMITTED</button>
+                <button type="submit" class="btn small" th:id="${'btn-' + next}" th:text="${vc.actionLabel(next)}">Submit</button>
             </form>
+            <p th:if="${#sets.isEmpty(allowedTransitions)}" class="alert info">No actions available for your role on this sample.</p>
         </div>
     </div>
     <div class="card" th:if="${#sets.isEmpty(nextStatuses)}">
         <h2>Workflow</h2>
-        <p class="alert info">This sample is in a terminal state (APPROVED). No further transitions.</p>
+        <p class="alert info">This sample is in a terminal state (<span th:text="${sample.status}">APPROVED</span>). No further transitions.</p>
     </div>
 
     <div class="card">
@@ -81,5 +85,6 @@
         </table>
     </div>
 </div>
+<footer class="footer">Water Quality Sampling Portal · DevOps MVP · DRAFT → SUBMITTED → UNDER_REVIEW → APPROVED | REJECTED</footer>
 </body>
 </html>

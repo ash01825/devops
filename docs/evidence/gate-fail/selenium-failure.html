@@ -1,0 +1,79 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Water Quality Portal — Sample Detail</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230e7490' d='M12 2C12 2 5 10 5 15a7 7 0 0 0 14 0C19 10 12 2 12 2z'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="/water-quality-portal/css/app.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">💧 Water Quality Portal <small>· sample detail</small></div>
+    <nav class="nav">
+        <a href="/water-quality-portal/dashboard">Dashboard</a>
+        <a href="/water-quality-portal/samples">Samples</a>
+        <a href="/water-quality-portal/samples/new">+ New Sample</a>
+        
+    </nav>
+    <div class="userbox">
+        <span>collector</span>
+        <span class="role">[ROLE_COLLECTOR]</span>
+        <form action="/water-quality-portal/logout" method="post" style="display:inline"><input type="hidden" name="_csrf" value="OSa1fMFn-XUZtT3hWBnXlZ39RMv0eDhKZJtl4qh3VsMqS_QCDRfRS_hfyEA00FzQazTj8_jFaaqSQF1nU_4B2p4TYfNPKcRg">
+            <button class="linkbtn" type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<div class="container">
+    
+    
+
+    <div class="card">
+        <h2><span>WQ-0006</span>
+            <span class="badge DRAFT" id="statusBadge">DRAFT</span>
+        </h2>
+        <p><a href="/water-quality-portal/samples">← Back to list</a> ·
+           <a href="/water-quality-portal/samples/6/edit" id="editLink">Edit measurements</a></p>
+
+        <dl class="detail">
+            <div><dt>Station</dt><dd>ST-04 — East Borewell Cluster</dd></div>
+            <div><dt>Collected</dt><dd>2026-10-12 10:41</dd></div>
+            <div><dt>Collector</dt><dd>Anita Rao</dd></div>
+            <div><dt>pH</dt><dd>7.10</dd></div>
+            <div><dt>Temperature (°C)</dt><dd>24.00</dd></div>
+            <div><dt>Dissolved O₂ (mg/L)</dt><dd>8.00</dd></div>
+            <div><dt>Turbidity (NTU)</dt><dd>2.00</dd></div>
+            <div><dt>Conductivity (µS/cm)</dt><dd>445.00</dd></div>
+        </dl>
+        <p><strong>Notes:</strong> <span>Fresh field entry</span></p>
+    </div>
+
+    <div class="card">
+        <h2>Workflow actions</h2>
+        <p style="color:#64748b">Only the actions permitted for your role are shown.</p>
+        <div class="workflow">
+            
+            <p class="alert info">No actions available for your role on this sample.</p>
+        </div>
+    </div>
+    
+
+    <div class="card">
+        <h2>Audit history</h2>
+        <table class="data" id="historyTable">
+            <thead><tr><th>When</th><th>From → To</th><th>By</th><th>Comment</th></tr></thead>
+            <tbody>
+            <tr>
+                <td>2026-10-12 10:41</td>
+                <td><span></span> → <strong>DRAFT</strong></td>
+                <td>system</td>
+                <td>Seeded as DRAFT</td>
+            </tr>
+            
+            </tbody>
+        </table>
+    </div>
+</div>
+<footer class="footer">Water Quality Sampling Portal · DevOps MVP · DRAFT → SUBMITTED → UNDER_REVIEW → APPROVED | REJECTED</footer>
+
+
+</body></html>

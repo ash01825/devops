@@ -16,9 +16,12 @@ Any red stage aborts the run — Deploy is reached only on fully green builds.
 
 ## Versioned image from APP_VERSION
 
-- `APP_VERSION = git describe --tags --always` (fallback `1.0.0`), so image tag
-  tracks the release tag (`v1.0.0` → `water-quality-portal:v1.0.0`-style tag).
+- `APP_VERSION = git describe --tags --abbrev=0` (fallback `1.0.0`, `v` prefix
+  stripped), so the image tag tracks the release tag
+  (`v1.0.0` → `water-quality-portal:1.0.0`).
 - Docker Build: `docker build -f docker/Dockerfile -t water-quality-portal:${APP_VERSION} .`
+- Compose deploys that exact tag: `image: water-quality-portal:${APP_VERSION:-1.0.0}`
+  (`docker/docker-compose.yml`), so "deploy version X" really runs version X.
 - Docker Publish: `docker tag ... :latest` alias; image stays in the local daemon
   (registry `withRegistry` push snippet is commented for offline use).
 
@@ -27,10 +30,15 @@ Any red stage aborts the run — Deploy is reached only on fully green builds.
 ```bash
 docker images | grep water-quality-portal
 # water-quality-portal   1.0.0 / <APP_VERSION>   ...   (plus :latest alias)
+docker inspect water-quality-portal:1.0.0 --format='digest: {{.Id}} created: {{.Created}}'
 ```
 
-Screenshot this plus the Jenkins **Console Output** (Deploy stage + health-check
-`curl` 200) for the report.
+> No external registry is used in this lab setup: "published" means the
+> versioned image is built, tagged, and present in the daemon (see
+> `docs/evidence/docker-lifecycle.log`), ready for `docker push` via the
+> commented `withRegistry` block when a registry is available. Capture the
+> `docker images` output plus the Jenkins **Console Output** (Deploy stage +
+> health-check `curl` 200) for the report.
 
 ## Auto-deploy fresh container after green tests
 
@@ -43,8 +51,10 @@ Screenshot this plus the Jenkins **Console Output** (Deploy stage + health-check
 
 ## ENV_NAME parameterization
 
-- `ENV_NAME` (default `staging`): container named `wq-portal-app-$ENV_NAME`,
-  compose project gets `ENV_NAME="$ENV_NAME"`.
+- `ENV_NAME` (default `staging`): labels the run and names the fallback
+  `docker run` container (`wq-portal-app-$ENV_NAME`). The compose deployment
+  uses the pinned project `wq-portal` (so manual, Jenkins, and Ansible runs
+  share state instead of colliding).
 - Run prod-like deploy without editing the Jenkinsfile:
   Build with Parameters → `ENV_NAME=prod`.
-- Same image, different name/env per target — reproducible promotion path.
+- Same image, explicit version per deploy — reproducible promotion path.

@@ -25,12 +25,14 @@ RUN rm -rf webapps/*
 # Deploy the WAR built in stage 1 under the required context path
 COPY --from=builder /build/water-quality-portal/target/water-quality-portal.war webapps/water-quality-portal.war
 
-# Runtime configuration (overridable at `docker run -e` / compose)
+# Runtime configuration (overridable at `docker run -e` / compose).
+# The app reads DB_URL/DB_USER/DB_PASS in prod (explicit placeholders in
+# application.yml); SPRING_DATASOURCE_* duplicates are also honored by
+# Spring Boot's relaxed binding and kept for operator familiarity.
 ENV SPRING_PROFILES_ACTIVE=prod \
     DB_URL=jdbc:postgresql://db:5432/waterquality \
     DB_USER=wquser \
-    DB_PASS=wqpass \
-    TOMCAT_USER=admin
+    DB_PASS=wqpass
 
 EXPOSE 8080
 
