@@ -9,21 +9,34 @@ pipeline {
 
     parameters {
         string(name: 'ENV_NAME', defaultValue: 'staging',
-               description: 'Target environment label (staging | prod). Used for deploy naming.')
+               description: 'Target environment label (staging | prod). Names the fallback container and labels the run; the compose deployment uses project wq-portal.')
         booleanParam(name: 'SKIP_SELENIUM', defaultValue: false,
                      description: 'Skip the Selenium quality gate (e.g. headless runner unavailable).')
     }
 
     environment {
-        // Version from git tag, fallback to 1.0.0 on shallow/no-tag checkouts
-        APP_VERSION = """${sh(script: 'git describe --tags --always 2>/dev/null || echo 1.0.0', returnStdout: true).trim()}"""
-        IMAGE = "water-quality-portal:${APP_VERSION}"
+        // Static default only — declarative `environment` cannot run steps.
+        // The real version is resolved from git tags in Checkout below.
+        APP_VERSION = "1.0.0"
+        IMAGE = "water-quality-portal:1.0.0"
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+                script {
+                    String v = sh(
+                        script: 'git describe --tags --abbrev=0 2>/dev/null || echo 1.0.0',
+                        returnStdout: true).trim()
+                    if (!v) {
+                        v = '1.0.0'
+                    }
+                    v = v.replaceFirst(/^v/, '') // tags are vX.Y.Z, image tags are X.Y.Z
+                    env.APP_VERSION = v
+                    env.IMAGE = "water-quality-portal:${v}"
+                    echo "Building version: ${env.APP_VERSION} (image ${env.IMAGE})"
+                }
             }
         }
 
@@ -46,8 +59,10 @@ pipeline {
 
         stage('Unit Test') {
             steps {
+                // Selenium journeys are excluded here; they run in the gate below
+                // so SKIP_SELENIUM can actually skip them on browserless agents.
                 sh '''
-                    cd water-quality-portal && mvn -B test
+                    cd water-quality-portal && mvn -B test -Dtest='!WaterQualitySeleniumTest'
                 '''
             }
             post {
@@ -62,16 +77,16 @@ pipeline {
                 expression { return !params.SKIP_SELENIUM }
             }
             steps {
-                // Runs the Selenium suite; falls back to full verify if no
-                // dedicated suite is bound, so the gate never silently passes.
+                // Headless-Chrome journeys (WaterQualitySeleniumTest, j1-j5).
+                // -DfailIfNoTests=true: the gate must RUN tests, never pass vacuously.
                 sh '''
                     cd water-quality-portal && \
-                      (mvn -B verify -Dtest=SeleniumSuite -DfailIfNoTests=false || mvn -B verify)
+                      mvn -B test -Dtest='WaterQualitySeleniumTest' -DfailIfNoTests=true
                 '''
             }
             post {
                 always {
-                    junit testResults: 'water-quality-portal/target/failsafe-reports/*.xml,water-quality-portal/target/surefire-reports/*.xml',
+                    junit testResults: 'water-quality-portal/target/surefire-reports/*.xml',
                           allowEmptyResults: true
                 }
             }
@@ -86,7 +101,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -f docker/Dockerfile -t water-quality-portal:${APP_VERSION} .'
+                sh "docker build -f docker/Dockerfile -t ${env.IMAGE} ."
             }
         }
 
@@ -94,14 +109,14 @@ pipeline {
             steps {
                 script {
                     // Tag :latest alias alongside the versioned tag.
-                    sh 'docker tag water-quality-portal:${APP_VERSION} water-quality-portal:latest'
+                    sh "docker tag ${env.IMAGE} water-quality-portal:latest"
                     // Push to a registry only when one is configured; default
                     // keeps the image in the local daemon (works offline).
                     // To enable Docker Hub, wrap with:
                     //   withRegistry('', 'docker-hub-credentials') {
-                    //     sh 'docker push ...'
+                    //     sh "docker push ${env.IMAGE}"
                     //   }
-                    echo "Image ready locally: water-quality-portal:${APP_VERSION} (alias :latest)"
+                    echo "Image ready locally: ${env.IMAGE} (alias :latest)"
                 }
             }
         }
@@ -113,18 +128,27 @@ pipeline {
                 // Unit Test / Selenium gate stops deployment automatically.
                 sh '''
                     ENV_NAME="${ENV_NAME:-staging}"
-                    echo "Deploying to environment: $ENV_NAME (version ${APP_VERSION})"
+                    echo "Deploying version ${APP_VERSION} to environment: $ENV_NAME"
                     if docker compose version >/dev/null 2>&1; then
-                        ENV_NAME="$ENV_NAME" APP_VERSION="${APP_VERSION}" \
-                          docker compose -f docker/docker-compose.yml up -d --build
+                        APP_VERSION="${APP_VERSION}" ENV_NAME="$ENV_NAME" \
+                          docker compose -f docker/docker-compose.yml up -d
                     else
                         docker rm -f "wq-portal-app-$ENV_NAME" 2>/dev/null || true
                         docker run -d --name "wq-portal-app-$ENV_NAME" -p 8080:8080 \
                           -e SPRING_PROFILES_ACTIVE=prod \
                           "water-quality-portal:${APP_VERSION}"
                     fi
-                    sleep 5
-                    curl -f http://localhost:8080/water-quality-portal/actuator/health
+                    for i in $(seq 1 24); do
+                      if curl -f http://localhost:8080/water-quality-portal/actuator/health; then
+                        echo "Deploy healthy."
+                        break
+                      fi
+                      if [ "$i" = "24" ]; then
+                        echo "Deploy health check FAILED after 2 minutes."
+                        exit 1
+                      fi
+                      sleep 5
+                    done
                 '''
             }
         }
@@ -139,7 +163,7 @@ pipeline {
             echo "Pipeline FAILED — deployment was NOT performed (see failed stage above)."
         }
         success {
-            echo "Pipeline OK — version ${APP_VERSION} deployed to ${params.ENV_NAME}."
+            echo "Pipeline OK — version ${env.APP_VERSION} deployed to ${params.ENV_NAME}."
         }
     }
 }

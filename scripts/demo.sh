@@ -13,9 +13,14 @@ cd "$REPO_ROOT"
 APP_VERSION="${APP_VERSION:-1.0.0}"
 BASE_URL="http://localhost:8080/water-quality-portal"
 
-echo "=== [1/5] Maven full verify (unit + integration tests) ==="
+echo "=== [1/5] Maven full verify (unit + Selenium journeys) ==="
 cd water-quality-portal
-mvn -B verify
+if [ "${SKIP_SELENIUM:-false}" = "true" ]; then
+  echo "(SKIP_SELENIUM=true: Selenium journeys excluded)"
+  mvn -B test -Dtest='!WaterQualitySeleniumTest'
+else
+  mvn -B verify
+fi
 cd ..
 
 echo "=== [2/5] Docker build (versioned tag) ==="
@@ -26,7 +31,18 @@ echo "=== [3/5] Compose up ==="
 docker compose -f docker/docker-compose.yml up -d --build
 docker compose -f docker/docker-compose.yml ps
 
-echo "=== [4/5] Health check ==="
+echo "=== [4/5] Health check (waits up to ~2 min for Tomcat) ==="
+for i in $(seq 1 24); do
+  if curl -sf "$BASE_URL/actuator/health" >/dev/null; then
+    echo "App is up."
+    break
+  fi
+  if [ "$i" = "24" ]; then
+    echo "App did not become healthy in time." >&2
+    exit 1
+  fi
+  sleep 5
+done
 if command -v conda >/dev/null 2>&1; then
   conda run -n os python scripts/health_check.py --base-url "$BASE_URL"
 else

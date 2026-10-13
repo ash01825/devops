@@ -3,7 +3,12 @@
 
 Checks:
   1. Spring Boot Actuator health endpoint (expects {"status":"UP"}).
-  2. Portal login/samples page reachable (expects HTTP 200).
+  2. Security gate: /samples must NOT serve data anonymously — it must either
+     redirect to /login (302, auth gate working) or serve the page (200).
+  3. Login page renders (expects HTTP 200 with the sign-in form).
+
+Redirects are NOT followed for /samples, so a bare login page can never
+masquerade as a reachable app page.
 
 Usage:
   conda run -n os python scripts/health_check.py [--base-url URL]
@@ -20,10 +25,21 @@ import urllib.error
 DEFAULT_BASE = "http://localhost:8080/water-quality-portal"
 
 
-def fetch(url: str, timeout: int = 10):
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Refuse to follow redirects so 302s stay visible to the caller."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def fetch(url: str, timeout: int = 10, follow_redirects: bool = True):
     """GET url, return (status_code, body_text). Never raises."""
     try:
-        with urllib.request.urlopen(url, timeout=timeout) as resp:
+        if follow_redirects:
+            opener = urllib.request.build_opener()
+        else:
+            opener = urllib.request.build_opener(NoRedirect)
+        with opener.open(url, timeout=timeout) as resp:
             return resp.status, resp.read().decode("utf-8", "replace")
     except urllib.error.HTTPError as exc:
         try:
@@ -53,20 +69,25 @@ def main() -> int:
         print(f"[health] FAIL: body={body[:300]!r}")
         failures.append("actuator")
 
-    # 2. Samples/login page reachable
-    status, body = fetch(f"{base}/samples")
-    print(f"[page]   GET {base}/samples -> {status}")
-    if status == 200:
-        print("[page]   OK: /samples reachable")
+    # 2. Security gate on /samples (no redirect-following here)
+    status, _ = fetch(f"{base}/samples", follow_redirects=False)
+    print(f"[auth]   GET {base}/samples (no redirect) -> {status}")
+    if status == 302:
+        print("[auth]   OK: anonymous /samples redirects to login (gate working)")
+    elif status == 200:
+        print("[auth]   OK: /samples serves content")
     else:
-        # Fall back to root in case routing differs; still require one 200.
-        status2, _ = fetch(f"{base}/")
-        print(f"[page]   GET {base}/ -> {status2}")
-        if status2 == 200:
-            print("[page]   OK: root reachable (samples route may need auth)")
-        else:
-            print("[page]   FAIL: neither /samples nor / returned 200")
-            failures.append("page")
+        print("[auth]   FAIL: unexpected status for /samples")
+        failures.append("auth-gate")
+
+    # 3. Login page renders
+    status, body = fetch(f"{base}/login")
+    print(f"[page]   GET {base}/login -> {status}")
+    if status == 200 and 'name="password"' in body:
+        print("[page]   OK: login form reachable")
+    else:
+        print("[page]   FAIL: login form not found")
+        failures.append("login-page")
 
     if failures:
         print(f"UNHEALTHY: {', '.join(failures)}")
