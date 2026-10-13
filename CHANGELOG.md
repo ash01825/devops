@@ -15,6 +15,16 @@
   before packaging/deploy stages.
 - Provisioning: Ansible playbook (idempotent), rollback playbook, health checks.
 
-## Unreleased (on `master` after `v1.0.0`)
+## v1.0.1 — viva hardening (tagged `v1.0.1`)
 
-- Docs and pipeline hardening; see `git log --oneline` for details.
+- Security: new samples always start `DRAFT` (posted status ignored);
+  server-side measurement/coordinate/date validation; edit form guarded
+  on GET as well as POST; prod login hides demo accounts.
+- Reliability: prod bootstrap admin from `ADMIN_PASSWORD`; Ansible handler
+  flush before health-gate; `ADMIN_PASSWORD`/DB vars threaded through
+  Jenkins → compose → Ansible; Dockerfile uses `$CATALINA_HOME`.
+- Tests: 32 green (Selenium search-submit hardened for headless Chrome).
+
+## Unreleased
+
+- See `git log --oneline` for details.

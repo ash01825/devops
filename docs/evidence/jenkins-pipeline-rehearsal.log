@@ -1,17 +1,14 @@
-=== Jenkins stage rehearsal (mirrors jenkins/Jenkinsfile) ===
-APP_VERSION: 1.0.0
-=== Build: mvn -B clean package -DskipTests ===
+=== Build ===
 [INFO] BUILD SUCCESS
-[INFO] Total time:  2.565 s
-=== Unit Test: mvn -B test -Dtest='!WaterQualitySeleniumTest' ===
-[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.230 s -- in com.waterquality.portal.SampleServiceTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in com.waterquality.portal.WaterQualityPortalApplicationTests
-[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.137 s -- in com.waterquality.portal.WebSecurityTest
-[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+=== Unit Test (excl Selenium) ===
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.083 s -- in com.waterquality.portal.SampleServiceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.waterquality.portal.WaterQualityPortalApplicationTests
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.980 s -- in com.waterquality.portal.WebSecurityTest
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
-=== Selenium Quality Gate: WaterQualitySeleniumTest ===
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.680 s -- in com.waterquality.portal.WaterQualitySeleniumTest
+=== Selenium Gate ===
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.984 s -- in com.waterquality.portal.WaterQualitySeleniumTest
 [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 === Archive ===
--rw-r--r--@ 1 ash  staff  57864796 Oct 13 10:46 target/water-quality-portal.war
+-rw-r--r--@ 1 ash  staff  57865693 Oct 13 11:02 target/water-quality-portal.war
